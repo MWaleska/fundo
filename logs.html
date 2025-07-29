@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Logs do Sistema</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Botão de tema -->
+  <button id="theme-toggle" class="theme-toggle">🌙</button>
+  
+  <div class="main-container">
+    <img src="fcja.png" class="logo" />
+    <h2>Logs do Sistema</h2>
+    
+    <!-- Filtros -->
+    <div class="filter-container">
+      <input type="text" id="filtroUsuario" placeholder="Filtrar por usuário" />
+      <select id="filtroAcao">
+        <option value="">Todas as ações</option>
+        <option value="LOGIN">Login</option>
+        <option value="ADICIONAR_DOCUMENTO">Adicionar Documento</option>
+        <option value="EDITAR_DOCUMENTO">Editar Documento</option>
+        <option value="EXCLUIR_DOCUMENTO">Excluir Documento</option>
+        <option value="EXPORTAR_EXCEL">Exportar Excel</option>
+        <option value="EXPORTAR_WORD">Exportar Word</option>
+        <option value="UPLOAD_ARQUIVO">Upload Arquivo</option>
+      </select>
+      <button onclick="filtrarLogs()">Filtrar</button>
+    </div>
+     <div class="action-buttons">
+      <button onclick="carregarLogs()">Atualizar</button>
+      <button onclick="window.location='admin.html'">Voltar</button>
+    </div>
+    
+    <div id="tabelaLogs"></div>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>
+    let logsOriginais = [];
+
+    async function carregarLogs() {
+      try {
+        const resposta = await fetch("http://localhost:5000/ver_logs");
+        logsOriginais = await resposta.json();
+        renderTabelaLogs(logsOriginais);
+      } catch (e) {
+        console.error("Erro ao carregar logs:", e);
+        alert("Erro ao carregar logs do sistema");
+      }
+    }
+
+    function renderTabelaLogs(logs) {
+      const tabela = document.getElementById("tabelaLogs");
+      if (logs.length === 0) {
+        tabela.innerHTML = "<p>Nenhum log encontrado.</p>";
+        return;
+      }
+
+      logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      let html = `
+        <table border='1' style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th>Data/Hora</th>
+              <th>Usuário</th>
+              <th>Ação</th>
+              <th>Detalhes</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      logs.forEach(log => {
+        html += `
+          <tr>
+            <td>${log.timestamp}</td>
+            <td>${log.usuario}</td>
+            <td>${log.acao}</td>
+            <td>${log.detalhes || '-'}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      tabela.innerHTML = html;
+    }
+
+    function filtrarLogs() {
+      const filtroUsuario = document.getElementById("filtroUsuario").value.toLowerCase();
+      const filtroAcao = document.getElementById("filtroAcao").value;
+
+      let logsFiltrados = logsOriginais;
+
+      if (filtroUsuario) {
+        logsFiltrados = logsFiltrados.filter(log => 
+          log.usuario.toLowerCase().includes(filtroUsuario)
+        );
+      }
+
+      if (filtroAcao) {
+        logsFiltrados = logsFiltrados.filter(log => log.acao === filtroAcao);
+      }
+
+      renderTabelaLogs(logsFiltrados);
+    }
+
+    carregarLogs();
+  </script>
+</body>
+</html>

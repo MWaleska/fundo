@@ -1,0 +1,17 @@
+[
+    {
+        "usuario": "admin",
+        "senha": "$2b$12$IGuELrKUoywKj5cubnOeb.SeQsCTUeHU.nSP3QaaXbmWbjfL9FgEy",
+        "tipo": "administrador"
+    },
+    {
+        "usuario": "waleska",
+        "senha": "$2b$12$i5lrWgB4.XD.BgUUCbRwIuEmPX/eLEiTvnjabS3oa2nMj7mnB03GO",
+        "tipo": "codificador"
+    },
+    {
+        "usuario": "lene",
+        "senha": "$2b$12$kObcUPLykp/fJiVc37tjTOuzU30EUSDsTCKPb7RlwynIurlK787ce",
+        "tipo": "editor"
+    }
+]

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Teste - Visualizar Documentos</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    button { margin: 5px; padding: 5px 10px; }
+    .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Teste - Visualizar Documentos</h1>
+  
+  <div class="debug">
+    <h3>Debug Info:</h3>
+    <p id="debug-info">Carregando...</p>
+  </div>
+  
+  <button onclick="testarConexao()">1. Testar Conexão</button>
+  <button onclick="carregarDados()">2. Carregar Dados</button>
+  <button onclick="mostrarJSON()">3. Mostrar JSON Raw</button>
+  
+  <div id="resultado"></div>
+  
+  <script>
+    let dadosGlobais = [];
+    
+    // Função 1: Testar conexão básica
+    async function testarConexao() {
+      const debug = document.getElementById('debug-info');
+      debug.innerHTML = 'Testando conexão...';
+      
+      try {
+        const response = await fetch('http://localhost:5000/ver_dados');
+        debug.innerHTML = `
+          Status: ${response.status}<br>
+          OK: ${response.ok}<br>
+          Headers: ${response.headers.get('content-type')}
+        `;
+        
+        if (response.ok) {
+          const dados = await response.json();
+          debug.innerHTML += `<br>Documentos encontrados: ${dados.length}`;
+          dadosGlobais = dados;
+          return dados;
+        }
+      } catch (error) {
+        debug.innerHTML = `Erro: ${error.message}`;
+        console.error('Erro de conexão:', error);
+      }
+    }
+    
+    // Função 2: Carregar e exibir dados
+    async function carregarDados() {
+      const resultado = document.getElementById('resultado');
+      resultado.innerHTML = '<p>Carregando dados...</p>';
+      
+      try {
+        const response = await fetch('http://localhost:5000/ver_dados');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const dados = await response.json();
+        console.log('Dados recebidos:', dados);
+        
+        if (dados.length === 0) {
+          resultado.innerHTML = '<p>Nenhum documento encontrado.</p>';
+          return;
+        }
+        
+        // Criar tabela simples
+        let html = `
+          <h2>Documentos Encontrados (${dados.length})</h2>
+          <table>
+            <tr>
+              <th>ID</th>
+              <th>Arquivo</th>
+              <th>Fundo</th>
+              <th>Grupo</th>
+              <th>Tipo</th>
+              <th>Datas</th>
+            </tr>
+        `;
+        
+        dados.forEach((doc, index) => {
+          html += `
+            <tr>
+              <td>${doc.id || 'N/A'}</td>
+              <td>${doc.Arquivo || 'N/A'}</td>
+              <td>${doc.Fundo || 'N/A'}</td>
+              <td>${doc.Grupo || 'N/A'}</td>
+              <td>${doc.Tipo || 'N/A'}</td>
+              <td>${doc.Datas || 'N/A'}</td>
+            </tr>
+          `;
+        });
+        
+        html += '</table>';
+        resultado.innerHTML = html;
+        
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        resultado.innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+      }
+    }
+    
+    // Função 3: Mostrar JSON raw
+    function mostrarJSON() {
+      const resultado = document.getElementById('resultado');
+      if (dadosGlobais.length > 0) {
+        resultado.innerHTML = `
+          <h2>JSON Raw:</h2>
+          <pre style="background: #f5f5f5; padding: 10px; overflow: auto;">${JSON.stringify(dadosGlobais, null, 2)}
+          </pre>
+        `;
+      } else {
+        resultado.innerHTML = '<p>Primeiro carregue os dados!</p>';
+      }
+    }
+    
+    // Auto-carregar ao abrir a página
+    window.addEventListener('load', function() {
+      console.log('Página carregada, testando conexão...');
+      testarConexao();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gerenciar Uploads</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Estilos para o modal de visualização */
+    .modal-visualizar {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      overflow: auto;
+    }
+
+    .modal-content-visualizar {
+      background-color: var(--container-bg);
+      margin: 2% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .close-modal {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      right: 15px;
+      top: 10px;
+    }
+
+    .close-modal:hover,
+    .close-modal:focus {
+      color: var(--primary-color);
+    }
+
+    .media-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .media-container img {
+      max-width: 100%;
+      max-height: 70vh;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .media-container video {
+      max-width: 100%;
+      max-height: 70vh;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .media-container audio {
+      width: 100%;
+      max-width: 500px;
+      margin: 20px 0;
+    }
+
+    .file-info {
+      background: var(--table-header-bg);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .file-info h3 {
+      margin: 0 0 10px 0;
+      color: var(--primary-color);
+    }
+
+    .file-info p {
+      margin: 5px 0;
+      color: var(--text-color);
+    }
+
+    .btn-visualizar {
+      background: #17a2b8 !important;
+      color: white;
+      margin: 2px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .btn-visualizar:hover {
+      background: #138496 !important;
+    }
+
+    .error-message {
+      color: #dc3545;
+      text-align: center;
+      padding: 20px;
+      font-size: 16px;
+    }
+
+    .loading-message {
+      color: var(--text-color);
+      text-align: center;
+      padding: 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Botão de tema -->
+  <button id="theme-toggle" class="theme-toggle">🌙</button>
+  
+  <div class="main-container">
+    <img src="fcja.png" class="logo" />
+    <h2>Gerenciar Uploads</h2>
+      <button id="btnVoltar">Voltar</button>
+    <div id="tabelaUploads"></div>
+    
+    <div class="action-buttons">
+      <button onclick="carregarUploads()">Atualizar Lista</button>
+    </div>
+  </div>
+
+  <!-- Modal para visualizar arquivos -->
+  <div id="modalVisualizar" class="modal-visualizar">
+    <div class="modal-content-visualizar">
+      <span class="close-modal" onclick="fecharModal()">&times;</span>
+      <div id="conteudoModal">
+        <!-- Conteúdo será inserido dinamicamente -->
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>
+    // Carregar lista de uploads
+    async function carregarUploads() {
+      try {
+        const resposta = await fetch("http://localhost:5000/listar_uploads");
+        const uploads = await resposta.json();
+        renderTabelaUploads(uploads);
+      } catch (e) {
+        console.error("Erro ao carregar uploads:", e);
+        alert("Erro ao carregar lista de uploads");
+      }
+    }
+
+    // Renderizar tabela de uploads
+    function renderTabelaUploads(uploads) {
+      const tabela = document.getElementById("tabelaUploads");
+      const tipoUsuario = localStorage.getItem("tipoUsuario");
+      const podeExcluir = tipoUsuario === "administrador" || tipoUsuario === "editor";
+
+      if (uploads.length === 0) {
+        tabela.innerHTML = "<p>Nenhum arquivo encontrado.</p>";
+        return;
+      }
+
+      let html = `
+        <table border='1' style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th>Nome do Arquivo</th>
+              <th>Tipo</th>
+              <th>Tamanho</th>
+              <th>Data de Modificação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      uploads.forEach(upload => {
+        const tamanhoFormatado = formatarTamanho(upload.tamanho);
+        const tipoArquivo = obterTipoArquivo(upload.nome);
+        const iconeArquivo = obterIconeArquivo(tipoArquivo);
+        
+        html += `
+          <tr>
+            <td>
+              <span style="margin-right: 8px;">${iconeArquivo}</span>
+              ${upload.nome}
+            </td>
+            <td>${tipoArquivo}</td>
+            <td>${tamanhoFormatado}</td>
+            <td>${upload.data_modificacao}</td>
+            <td>
+              <button class="btn-visualizar" onclick="visualizarArquivo('${upload.nome}')">👁️ Visualizar</button>
+              <button onclick="baixarArquivo('${upload.nome}')" style="margin: 2px; padding: 5px 10px; background: #28a745; color: white; border: none; border-radius: 3px; font-size: 12px;">📥 Download</button>
+              ${podeExcluir ? `<button onclick="excluirUpload('${upload.nome}')" style="margin: 2px; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 3px; font-size: 12px;">🗑️ Excluir</button>` : ''}
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      tabela.innerHTML = html;
+    }
+
+    // Obter tipo de arquivo pela extensão
+    function obterTipoArquivo(nomeArquivo) {
+      const extensao = nomeArquivo.split('.').pop().toLowerCase();
+      
+      const tiposImagem = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+      const tiposVideo = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'];
+      const tiposAudio = ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac'];
+      const tiposDocumento = ['pdf', 'doc', 'docx', 'txt', 'rtf'];
+      
+      if (tiposImagem.includes(extensao)) return 'Imagem';
+      if (tiposVideo.includes(extensao)) return 'Vídeo';
+      if (tiposAudio.includes(extensao)) return 'Áudio';
+      if (tiposDocumento.includes(extensao)) return 'Documento';
+      
+      return 'Outro';
+    }
+
+    // Obter ícone do arquivo
+    function obterIconeArquivo(tipo) {
+      switch(tipo) {
+        case 'Imagem': return '🖼️';
+        case 'Vídeo': return '🎥';
+        case 'Áudio': return '🎵';
+        case 'Documento': return '📄';
+        default: return '📁';
+      }
+    }
+
+    // Visualizar arquivo no modal
+    async function visualizarArquivo(nomeArquivo) {
+      const modal = document.getElementById('modalVisualizar');
+      const conteudo = document.getElementById('conteudoModal');
+      const tipoArquivo = obterTipoArquivo(nomeArquivo);
+      const urlArquivo = `http://localhost:5000/uploads/${nomeArquivo}`;
+      
+      console.log('Tentando carregar arquivo:', nomeArquivo, 'Tipo:', tipoArquivo, 'URL:', urlArquivo);
+      
+      // Mostrar loading
+      conteudo.innerHTML = `
+        <div class="loading-message">
+          <p>Carregando arquivo...</p>
+          <p><small>Arquivo: ${nomeArquivo}</small></p>
+        </div>
+      `;
+      
+      modal.style.display = 'block';
+
+      // Verificar se o arquivo existe
+      try {
+        const response = await fetch(urlArquivo, { method: 'HEAD' });
+        console.log('Status da verificação do arquivo:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`Arquivo não encontrado (${response.status})`);
+        }
+      } catch (error) {
+        console.error('Erro ao verificar arquivo:', error);
+        mostrarErroCarregamento(`Erro ao acessar arquivo: ${error.message}`);
+        return;
+      }
+
+      // Informações do arquivo
+      let infoHtml = `
+        <div class="file-info">
+          <h3>${obterIconeArquivo(tipoArquivo)} ${nomeArquivo}</h3>
+          <p><strong>Tipo:</strong> ${tipoArquivo}</p>
+          <p><strong>URL:</strong> <a href="${urlArquivo}" target="_blank">${urlArquivo}</a></p>
+        </div>
+      `;
+
+      try {
+        let mediaHtml = '';
+        
+        switch(tipoArquivo) {
+          case 'Imagem':
+            mediaHtml = `
+              <div class="media-container">
+                <img src="${urlArquivo}" alt="${nomeArquivo}" 
+                     onload="console.log('Imagem carregada com sucesso')" 
+                     onerror="console.error('Erro ao carregar imagem'); mostrarErroCarregamento('Erro ao carregar imagem')" />
+              </div>
+            `;
+            break;
+            
+          case 'Vídeo':
+            const extensao = nomeArquivo.split('.').pop().toLowerCase();
+            let tipoVideo = 'video/mp4'; // padrão
+            
+            switch(extensao) {
+              case 'mp4': tipoVideo = 'video/mp4'; break;
+              case 'webm': tipoVideo = 'video/webm'; break;
+              case 'ogg': case 'ogv': tipoVideo = 'video/ogg'; break;
+              case 'avi': tipoVideo = 'video/x-msvideo'; break;
+              case 'mov': tipoVideo = 'video/quicktime'; break;
+              case 'wmv': tipoVideo = 'video/x-ms-wmv'; break;
+            }
+            
+            console.log('Carregando vídeo:', nomeArquivo, 'Tipo MIME:', tipoVideo);
+            
+            mediaHtml = `
+              <div class="media-container">
+                <video controls preload="metadata" style="max-width: 100%; max-height: 70vh;"
+                       onloadstart="console.log('Iniciando carregamento do vídeo')"
+                       onloadedmetadata="console.log('Metadados do vídeo carregados')"
+                       oncanplay="console.log('Vídeo pronto para reproduzir')"
+                       onerror="console.error('Erro no vídeo:', event); mostrarErroVideo(event)"
+                       onabort="console.log('Carregamento do vídeo abortado')"
+                       onstalled="console.log('Carregamento do vídeo travado')">
+                  <source src="${urlArquivo}" type="${tipoVideo}">
+                  <p style="color: red;">
+                    Seu navegador não suporta o elemento de vídeo ou o formato do arquivo.
+                    <br><a href="${urlArquivo}" target="_blank">Clique aqui para baixar o vídeo</a>
+                  </p>
+                </video>
+                <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                  <p>📹 Formato: ${extensao.toUpperCase()} | Tipo MIME: ${tipoVideo}</p>
+                  <p>Se o vídeo não carregar, <a href="${urlArquivo}" target="_blank">clique aqui para abrir em nova aba</a></p>
+                </div>
+              </div>
+            `;
+            break;
+            
+          case 'Áudio':
+            const extensaoAudio = nomeArquivo.split('.').pop().toLowerCase();
+            let tipoAudio = 'audio/mpeg'; // padrão
+            
+            switch(extensaoAudio) {
+              case 'mp3': tipoAudio = 'audio/mpeg'; break;
+              case 'wav': tipoAudio = 'audio/wav'; break;
+              case 'ogg': tipoAudio = 'audio/ogg'; break;
+              case 'm4a': tipoAudio = 'audio/mp4'; break;
+              case 'aac': tipoAudio = 'audio/aac'; break;
+            }
+            
+            mediaHtml = `
+              <div class="media-container">
+                <audio controls preload="metadata" style="width: 100%; max-width: 500px;"
+                       onloadedmetadata="console.log('Áudio carregado')"
+                       onerror="console.error('Erro no áudio'); mostrarErroCarregamento('Erro ao carregar áudio')">
+                  <source src="${urlArquivo}" type="${tipoAudio}">
+                  Seu navegador não suporta o elemento de áudio.
+                </audio>
+                <p style="margin-top: 15px; color: var(--text-color);">
+                  🎵 Reprodutor de áudio - Use os controles para reproduzir
+                </p>
+              </div>
+            `;
+            break;
+            
+          case 'Documento':
+            mediaHtml = `
+              <div class="media-container">
+                <div style="padding: 40px; text-align: center; background: var(--table-header-bg); border-radius: 8px; margin: 20px 0;">
+                  <h3>📄 Documento</h3>
+                  <p>Este é um arquivo de documento. Clique no botão abaixo para abrir em uma nova aba.</p>
+                  <button onclick="window.open('${urlArquivo}', '_blank')" 
+                          style="margin-top: 15px; padding: 10px 20px; background: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    📖 Abrir Documento
+                  </button>
+                </div>
+              </div>
+            `;
+            break;
+            
+          default:
+            mediaHtml = `
+              <div class="media-container">
+                <div style="padding: 40px; text-align: center; background: var(--table-header-bg); border-radius: 8px; margin: 20px 0;">
+                  <h3>📁 Arquivo</h3>
+                  <p>Tipo de arquivo não suportado para visualização direta.</p>
+                  <button onclick="baixarArquivo('${nomeArquivo}')" 
+                          style="margin-top: 15px; padding: 10px 20px; background: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    📥 Baixar Arquivo
+                  </button>
+                </div>
+              </div>
+            `;
+        }
+        
+        conteudo.innerHTML = infoHtml + mediaHtml;
+        
+      } catch (error) {
+        console.error('Erro ao carregar arquivo:', error);
+        mostrarErroCarregamento('Erro ao carregar o arquivo: ' + error.message);
+      }
+    }
+
+    // Função específica para tratar erros de vídeo
+    function mostrarErroVideo(event) {
+      const video = event.target;
+      let mensagemErro = 'Erro desconhecido no vídeo';
+      
+      if (video.error) {
+        switch(video.error.code) {
+          case video.error.MEDIA_ERR_ABORTED:
+            mensagemErro = 'Reprodução abortada pelo usuário';
+            break;
+          case video.error.MEDIA_ERR_NETWORK:
+            mensagemErro = 'Erro de rede ao carregar vídeo';
+            break;
+          case video.error.MEDIA_ERR_DECODE:
+            mensagemErro = 'Erro ao decodificar vídeo - formato não suportado';
+            break;
+          case video.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            mensagemErro = 'Formato de vídeo não suportado pelo navegador';
+            break;
+        }
+      }
+      
+      console.error('Erro detalhado do vídeo:', mensagemErro, video.error);
+      mostrarErroCarregamento(`Erro no vídeo: ${mensagemErro}`);
+    }
+
+    // Mostrar erro de carregamento
+    function mostrarErroCarregamento(mensagem) {
+      const conteudo = document.getElementById('conteudoModal');
+      const infoExistente = conteudo.querySelector('.file-info');
+      const infoHtml = infoExistente ? infoExistente.outerHTML : '';
+      
+      conteudo.innerHTML = infoHtml + `
+        <div class="error-message">
+          <p>❌ ${mensagem}</p>
+          <p>Verifique se o arquivo existe e tente novamente.</p>
+        </div>
+      `;
+    }
+
+    // Fechar modal
+    function fecharModal() {
+      const modal = document.getElementById('modalVisualizar');
+      modal.style.display = 'none';
+      
+      // Parar reprodução de mídia
+      const videos = modal.querySelectorAll('video');
+      const audios = modal.querySelectorAll('audio');
+      
+      videos.forEach(video => {
+        video.pause();
+        video.currentTime = 0;
+      });
+      
+      audios.forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+    }
+
+    // Fechar modal clicando fora dele
+    window.onclick = function(event) {
+      const modal = document.getElementById('modalVisualizar');
+      if (event.target === modal) {
+        fecharModal();
+      }
+    }
+
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        fecharModal();
+      }
+    });
+
+    // Formatar tamanho do arquivo
+    function formatarTamanho(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Baixar arquivo
+    function baixarArquivo(nome) {
+      window.open(`http://localhost:5000/uploads/${nome}`, '_blank');
+    }
+
+    // Excluir upload
+    async function excluirUpload(nome) {
+      if (!confirm(`Deseja realmente excluir o arquivo ${nome}?`)) return;
+
+      try {
+        const resposta = await fetch("http://localhost:5000/excluir_upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: nome,
+            usuario: localStorage.getItem('usuarioLogado') || 'admin',
+            tipo_usuario: localStorage.getItem('tipoUsuario')
+          })
+        });
+
+        const data = await resposta.json();
+        if (data.status === "ok") {
+          alert("Arquivo excluído com sucesso!");
+          carregarUploads();
+        } else {
+          alert("Erro ao excluir arquivo: " + data.mensagem);
+        }
+      } catch (e) {
+        console.error("Erro:", e);
+        alert("Erro na comunicação com o servidor");
+      }
+    }
+
+    // Botão Voltar
+    document.getElementById("btnVoltar").addEventListener("click", function () {
+      const tipoUsuario = localStorage.getItem("tipoUsuario");
+      if (tipoUsuario === "administrador") {
+        window.location.href = "admin.html";
+      } else if (tipoUsuario === "editor") {
+        window.location.href = "editor.html";
+      } else if (tipoUsuario === "codificador") {
+        window.location.href = "codificador.html";
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // Inicializar tema
+    function initTheme() {
+      const savedTheme = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      const button = document.getElementById("theme-toggle");
+      if (button) {
+        button.textContent = savedTheme === "dark" ? "☀️" : "🌙";
+        button.addEventListener("click", toggleTheme);
+      }
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute("data-theme");
+      const newTheme = currentTheme === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+      document.getElementById("theme-toggle").textContent = newTheme === "dark" ? "☀️" : "🌙";
+    }
+
+    // Função para testar se o servidor está respondendo
+    async function testarConectividade() {
+      try {
+        const response = await fetch('http://localhost:5000/ver_dados');
+        console.log('Servidor respondendo:', response.ok);
+        return response.ok;
+      } catch (error) {
+        console.error('Servidor não está respondendo:', error);
+        return false;
+      }
+    }
+
+    // Modificar a função de inicialização
+    document.addEventListener('DOMContentLoaded', async function() {
+      initTheme();
+      
+      // Testar conectividade antes de carregar uploads
+      const servidorOk = await testarConectividade();
+      if (!servidorOk) {
+        document.getElementById('tabelaUploads').innerHTML = 
+          '<p style="color: red;">❌ Erro: Servidor não está respondendo. Verifique se o Flask está rodando na porta 5000.</p>';
+        return;
+      }
+      
+      carregarUploads();
+    });
+  </script>
+</body>
+</html>

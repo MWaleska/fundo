@@ -1,0 +1,268 @@
+[
+    {
+        "id": "20250729131927172618",
+        "usuario": "admin",
+        "acao": "CADASTRAR_USUARIO",
+        "detalhes": "Usuário admin cadastrado como administrador",
+        "timestamp": "2025-07-29 13:19:27"
+    },
+    {
+        "id": "20250729131949943214",
+        "usuario": "admin",
+        "acao": "CADASTRAR_USUARIO",
+        "detalhes": "Usuário waleska cadastrado como codificador",
+        "timestamp": "2025-07-29 13:19:49"
+    },
+    {
+        "id": "20250729132007279010",
+        "usuario": "admin",
+        "acao": "CADASTRAR_USUARIO",
+        "detalhes": "Usuário lene cadastrado como editor",
+        "timestamp": "2025-07-29 13:20:07"
+    },
+    {
+        "id": "20250729132218950899",
+        "usuario": "admin",
+        "acao": "LOGIN",
+        "detalhes": "Login realizado com sucesso",
+        "timestamp": "2025-07-29 13:22:18"
+    },
+    {
+        "id": "20250729132227191420",
+        "usuario": "waleska",
+        "acao": "LOGIN",
+        "detalhes": "Login realizado com sucesso",
+        "timestamp": "2025-07-29 13:22:27"
+    },
+    {
+        "id": "20250729132234591166",
+        "usuario": "lene",
+        "acao": "LOGIN",
+        "detalhes": "Login realizado com sucesso",
+        "timestamp": "2025-07-29 13:22:34"
+    },
+    {
+        "id": "20250729132306670105",
+        "usuario": "lene",
+        "acao": "CADASTRAR_USUARIO",
+        "detalhes": "Usuário teu cadastrado como administrador",
+        "timestamp": "2025-07-29 13:23:06"
+    },
+    {
+        "id": "20250729132319752726",
+        "usuario": "lene",
+        "acao": "CADASTRAR_USUARIO",
+        "detalhes": "Usuário talita cadastrado como codificador",
+        "timestamp": "2025-07-29 13:23:19"
+    },
+    {
+        "id": "20250729132330254971",
+        "usuario": "lene",
+        "acao": "CADASTRAR_USUARIO",
+        "detalhes": "Usuário winy cadastrado como editor",
+        "timestamp": "2025-07-29 13:23:30"
+    },
+    {
+        "id": "20250729132345924768",
+        "usuario": "lene",
+        "acao": "CADASTRAR_USUARIO",
+        "detalhes": "Usuário luna cadastrado como administrador",
+        "timestamp": "2025-07-29 13:23:45"
+    },
+    {
+        "id": "20250729132414133193",
+        "usuario": "teu",
+        "acao": "LOGIN",
+        "detalhes": "Login realizado com sucesso",
+        "timestamp": "2025-07-29 13:24:14"
+    },
+    {
+        "id": "20250729132428790538",
+        "usuario": "teu",
+        "acao": "EXCLUIR_USUARIO",
+        "detalhes": "Usuário talita excluído",
+        "timestamp": "2025-07-29 13:24:28"
+    },
+    {
+        "id": "20250729132434838807",
+        "usuario": "teu",
+        "acao": "EXCLUIR_USUARIO",
+        "detalhes": "Usuário winy excluído",
+        "timestamp": "2025-07-29 13:24:34"
+    },
+    {
+        "id": "20250729132501462986",
+        "usuario": "teu",
+        "acao": "EXCLUIR_USUARIO",
+        "detalhes": "Usuário luna excluído",
+        "timestamp": "2025-07-29 13:25:01"
+    },
+    {
+        "id": "20250729132505782353",
+        "usuario": "teu",
+        "acao": "EXCLUIR_USUARIO",
+        "detalhes": "Usuário teu excluído",
+        "timestamp": "2025-07-29 13:25:05"
+    },
+    {
+        "id": "20250729132609133229",
+        "usuario": "teu",
+        "acao": "ADICIONAR_DOCUMENTO",
+        "detalhes": "Documento Fundo José Américo de Almeida - FJAA adicionado",
+        "timestamp": "2025-07-29 13:26:09"
+    },
+    {
+        "id": "20250729132635623478",
+        "usuario": "teu",
+        "acao": "ADICIONAR_DOCUMENTO",
+        "detalhes": "Documento Fundo José Américo de Almeida - FJAA adicionado",
+        "timestamp": "2025-07-29 13:26:35"
+    },
+    {
+        "id": "20250729132704382399",
+        "usuario": "teu",
+        "acao": "ADICIONAR_DOCUMENTO",
+        "detalhes": "Documento Fundo José Américo de Almeida - FJAA adicionado",
+        "timestamp": "2025-07-29 13:27:04"
+    },
+    {
+        "id": "20250729132806871427",
+        "usuario": "admin",
+        "acao": "LOGIN",
+        "detalhes": "Login realizado com sucesso",
+        "timestamp": "2025-07-29 13:28:06"
+    },
+    {
+        "id": "20250729132840900862",
+        "usuario": "admin",
+        "acao": "ADICIONAR_DOCUMENTO",
+        "detalhes": "Documento Fundo José Américo de Almeida - FJAA adicionado",
+        "timestamp": "2025-07-29 13:28:40"
+    },
+    {
+        "id": "20250729132914982109",
+        "usuario": "admin",
+        "acao": "UPLOAD_ARQUIVO",
+        "detalhes": "Arquivo Captura_de_tela_2025-03-12_225157.png enviado",
+        "timestamp": "2025-07-29 13:29:14"
+    },
+    {
+        "id": "20250729132923261783",
+        "usuario": "admin",
+        "acao": "UPLOAD_ARQUIVO",
+        "detalhes": "Arquivo Captura_de_tela_2025-02-28_104644.png enviado",
+        "timestamp": "2025-07-29 13:29:23"
+    },
+    {
+        "id": "20250729132953891812",
+        "usuario": "admin",
+        "acao": "EXCLUIR_UPLOAD",
+        "detalhes": "Arquivo Captura_de_tela_2025-02-28_104644.png excluído",
+        "timestamp": "2025-07-29 13:29:53"
+    },
+    {
+        "id": "20250729133431780024",
+        "usuario": "admin",
+        "acao": "UPLOAD_ARQUIVO",
+        "detalhes": "Arquivo 100_8910.AVI enviado",
+        "timestamp": "2025-07-29 13:34:31"
+    },
+    {
+        "id": "20250729140703351110",
+        "usuario": "usuario",
+        "acao": "ADICIONAR_DOCUMENTO",
+        "detalhes": "Documento nj adicionado",
+        "timestamp": "2025-07-29 14:07:03"
+    },
+    {
+        "id": "20250729141330570187",
+        "usuario": "admin",
+        "acao": "EXCLUIR_UPLOAD",
+        "detalhes": "Arquivo 100_8910.AVI excluído",
+        "timestamp": "2025-07-29 14:13:30"
+    },
+    {
+        "id": "20250729151354463840",
+        "usuario": "usuario",
+        "acao": "EXPORTAR_WORD",
+        "detalhes": "Exportação Word: 40.docx (4 documentos)",
+        "timestamp": "2025-07-29 15:13:54"
+    },
+    {
+        "id": "20250729151416599173",
+        "usuario": "usuario",
+        "acao": "EXPORTAR_EXCEL",
+        "detalhes": "Exportação Excel: documentos_selecionados_2025-07-29.xlsx (4 documentos)",
+        "timestamp": "2025-07-29 15:14:16"
+    },
+    {
+        "id": "20250729152024158843",
+        "usuario": "admin",
+        "acao": "LOGIN",
+        "detalhes": "Login realizado com sucesso",
+        "timestamp": "2025-07-29 15:20:24"
+    },
+    {
+        "id": "20250729152116727438",
+        "usuario": "admin",
+        "acao": "EXPORTAR_WORD",
+        "detalhes": "Exportação Word: documentos_selecionados_2025-07-29.docx (3 documentos)",
+        "timestamp": "2025-07-29 15:21:16"
+    },
+    {
+        "id": "20250729152142419658",
+        "usuario": "admin",
+        "acao": "EXPORTAR_EXCEL",
+        "detalhes": "Exportação Excel: documentos_selecionados_2025-07-29.xlsx (3 documentos)",
+        "timestamp": "2025-07-29 15:21:42"
+    },
+    {
+        "id": "20250729154009375023",
+        "usuario": "admin",
+        "acao": "EXPORTAR_WORD",
+        "detalhes": "Exportação Word: Fundo José Américo de Almeida - FJAA.docx (1 documentos)",
+        "timestamp": "2025-07-29 15:40:09"
+    },
+    {
+        "id": "20250729155923551190",
+        "usuario": "admin2",
+        "acao": "LOGIN_FALHOU",
+        "detalhes": "Usuário não encontrado",
+        "timestamp": "2025-07-29 15:59:23"
+    },
+    {
+        "id": "20250729155931505455",
+        "usuario": "waleska",
+        "acao": "LOGIN_FALHOU",
+        "detalhes": "Senha incorreta",
+        "timestamp": "2025-07-29 15:59:31"
+    },
+    {
+        "id": "20250729155941865747",
+        "usuario": "waleska",
+        "acao": "LOGIN",
+        "detalhes": "Login realizado com sucesso",
+        "timestamp": "2025-07-29 15:59:41"
+    },
+    {
+        "id": "20250729161355550386",
+        "usuario": "waleska",
+        "acao": "EXPORTAR_WORD",
+        "detalhes": "Exportação Word: documentos_selecionados_2025-07-29.docx (5 documentos)",
+        "timestamp": "2025-07-29 16:13:55"
+    },
+    {
+        "id": "20250729162319652146",
+        "usuario": "waleska",
+        "acao": "EXPORTAR_WORD",
+        "detalhes": "Exportação Word: wal.docx (4 documentos)",
+        "timestamp": "2025-07-29 16:23:19"
+    },
+    {
+        "id": "20250729175758422431",
+        "usuario": "waleska",
+        "acao": "UPLOAD_ARQUIVO",
+        "detalhes": "Arquivo Captura_de_tela_2025-03-13_104629.png enviado",
+        "timestamp": "2025-07-29 17:57:58"
+    }
+]

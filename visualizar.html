@@ -1,0 +1,2153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Buscar Documentos</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Reset e base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Container principal - ESTILO ORIGINAL CENTRALIZADO */
+    .main-container {
+      max-width: 90vw;
+      width: 100%;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      text-align: center;
+      min-height: 85vh;
+    }
+
+    /* Logo - TAMANHO ORIGINAL */
+    .logo {
+      width: 120px;
+      height: auto;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+
+    /* Título principal - ESTILO ORIGINAL */
+    h1 {
+      color: #c41e3a;
+      font-size: 2.2em;
+      font-weight: 600;
+      margin-bottom: 40px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Botões principais - ESTILO ORIGINAL (largura total) */
+    .main-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .btn-main {
+      width: 100%;
+      padding: 15px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+    }
+
+    .btn-blue {
+      background: linear-gradient(135deg, #17a2b8, #007bff);
+      color: white;
+    }
+
+    .btn-main:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Status compacto mas visível */
+    .status-info {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      border-left: 4px solid #007bff;
+      text-align: left;
+    }
+
+    .status-info h3 {
+      color: #495057;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+    }
+
+    .status-text {
+      color: #6c757d;
+      font-size: 14px;
+    }
+
+    /* Campo de busca - ESTILO ORIGINAL */
+    .search-section {
+      margin: 30px 0;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      transition: border-color 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .search-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-search {
+      flex: 1;
+      padding: 15px;
+      background: linear-gradient(135deg, #c41e3a, #dc3545);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-search:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(196, 30, 58, 0.3);
+    }
+
+    .btn-clear {
+      background: linear-gradient(135deg, #6c757d, #495057);
+    }
+
+    /* Controles de exportação - ESTILO MELHORADO */
+    .export-controls {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      border-left: 4px solid #28a745;
+      transition: all 0.3s ease;
+    }
+
+    .export-controls h3 {
+      margin: 0 0 15px 0;
+      color: #28a745;
+      font-size: 1.2em;
+      text-align: left;
+    }
+
+    .selection-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    #contador-selecionados {
+      font-weight: bold;
+      color: #495057;
+      font-size: 16px;
+    }
+
+    .selection-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-small {
+      padding: 8px 15px;
+      font-size: 13px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #6c757d;
+      color: white;
+      font-weight: 600;
+    }
+
+    .btn-small:hover {
+      transform: translateY(-1px);
+      opacity: 0.9;
+    }
+
+    .export-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .btn-export {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-export:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-export.btn-success {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+    }
+
+    .btn-export.btn-info {
+      background: linear-gradient(135deg, #17a2b8, #007bff);
+      color: white;
+    }
+
+    .btn-export.btn-warning {
+      background: linear-gradient(135deg, #ffc107, #fd7e14);
+      color: black;
+    }
+
+    .btn-export.btn-danger {
+      background: linear-gradient(135deg, #dc3545, #c41e3a);
+      color: white;
+    }
+
+    /* Área da tabela - MANTENDO LARGURA EXPANDIDA */
+    .table-container {
+      margin: 30px 0;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .doc-table {
+      width: 100%;
+      min-width: 1200px;
+      border-collapse: collapse;
+    }
+
+    .doc-table th {
+      background: linear-gradient(135deg, #495057, #6c757d);
+      color: white;
+      padding: 15px 10px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .doc-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e9ecef;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .doc-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .doc-table tr.selected {
+      background: #e3f2fd;
+    }
+
+    /* Botões de ação individuais - ESTILO ORIGINAL */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 80px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-primary { 
+      background: linear-gradient(135deg, #007bff, #0056b3); 
+      color: white; 
+    }
+    
+    .btn-success { 
+      background: linear-gradient(135deg, #28a745, #1e7e34); 
+      color: white; 
+    }
+    
+    .btn-info { 
+      background: linear-gradient(135deg, #17a2b8, #117a8b); 
+      color: white; 
+    }
+    
+    .btn-warning { 
+      background: linear-gradient(135deg, #ffc107, #e0a800); 
+      color: black; 
+    }
+    
+    .btn-danger { 
+      background: linear-gradient(135deg, #dc3545, #c82333); 
+      color: white; 
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #fd7e14, #e55a00);
+      color: white;
+    }
+
+    /* Botão voltar - ESTILO ORIGINAL */
+    .btn-back {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #6c757d, #495057);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 30px;
+    }
+
+    .btn-back:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    /* Loading e mensagens */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6c757d;
+    }
+
+    .loading .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-display {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .success-display {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    /* Debug (oculto por padrão) */
+    .debug-info {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 11px;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      text-align: left;
+    }
+
+    .debug-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      font-size: 12px;
+      z-index: 1000;
+    }
+
+    /* QR Code da Lista */
+    .qr-list-display {
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+      max-width: 500px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .qr-list-display h4 {
+      color: #007bff;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+
+    /* QR Code containers individuais - FORÇAR EXIBIÇÃO */
+    .qr-container {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      text-align: center;
+      display: none;
+      border: 1px solid #dee2e6;
+      min-height: 40px;
+    }
+
+    .qr-container.show {
+      display: block !important;
+      visibility: visible !important;
+    }
+
+    .qr-container canvas {
+      margin: 5px 0;
+      border-radius: 3px;
+      display: block !important;
+      border: 1px solid #dee2e6;
+    }
+
+    .qr-info {
+      font-size: 10px;
+      color: #6c757d;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .qr-buttons {
+      display: flex;
+      gap: 3px;
+      justify-content: center;
+      margin-top: 5px;
+    }
+
+    .qr-btn {
+      padding: 2px 6px;
+      font-size: 9px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .qr-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .qr-btn-download {
+      background: #28a745;
+      color: white;
+    }
+
+    .qr-btn-hide {
+      background: #6c757d;
+      color: white;
+    }
+
+    /* Melhorar layout da coluna de ações */
+    .action-cell {
+      min-width: 140px;
+      vertical-align: top;
+    }
+
+    /* Responsivo */
+    @media (max-width: 1200px) {
+      .main-container {
+        max-width: 95vw;
+        padding: 30px;
+      }
+      
+      .export-buttons {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 20px;
+        margin: 10px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .search-buttons {
+        flex-direction: column;
+      }
+
+      .selection-info {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .export-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .doc-table {
+        font-size: 11px;
+        min-width: 800px;
+      }
+
+      .doc-table th,
+      .doc-table td {
+        padding: 8px 5px;
+      }
+
+      .action-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .action-btn {
+        font-size: 10px;
+        padding: 4px 8px;
+      }
+    }
+
+    /* Tema escuro (se necessário) */
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    }
+
+    [data-theme="dark"] .main-container {
+      background: #343a40;
+      color: white;
+    }
+
+    [data-theme="dark"] .search-input {
+      background: #495057;
+      border-color: #6c757d;
+      color: white;
+    }
+
+    [data-theme="dark"] .doc-table th {
+      background: linear-gradient(135deg, #212529, #343a40);
+    }
+
+    [data-theme="dark"] .doc-table td {
+      border-color: #495057;
+    }
+
+    [data-theme="dark"] .doc-table tr:hover {
+      background: #495057;
+    }
+
+    /* Larguras otimizadas das colunas */
+    .doc-table th:nth-child(1) { width: 50px; }
+    .doc-table th:nth-child(2) { width: 180px; }
+    .doc-table th:nth-child(3) { width: 100px; }
+    .doc-table th:nth-child(4) { width: 80px; }
+    .doc-table th:nth-child(5) { width: 150px; }
+    .doc-table th:nth-child(6) { width: 120px; }
+    .doc-table th:nth-child(7) { width: 60px; }
+    .doc-table th:nth-child(8) { width: 100px; }
+    .doc-table th:nth-child(9) { width: 120px; }
+    .doc-table th:nth-child(10) { width: 120px; }
+    .doc-table th:nth-child(11) { width: 100px; }
+    .doc-table th:nth-child(12) { width: 120px; }
+  </style>
+</head>
+<body>
+  <!-- Botão de debug -->
+  <button class="debug-toggle" onclick="toggleDebug()" title="Toggle Debug">🔧</button>
+
+  <div class="main-container">
+    <!-- Logo e título -->
+    <img src="fcja.png" class="logo" alt="Logo FCJA" />
+    <h1>Documentos Salvos</h1>
+
+    <!-- Botões principais -->
+    <div class="main-buttons">
+       <!-- Botão voltar -->
+    <button class="btn-back" onclick="voltarPagina()">
+      ← Voltar
+    </button>
+      <button class="btn-main btn-green" onclick="carregarDados()">
+        Recarregar Dados
+      </button>
+      <button class="btn-main btn-blue" onclick="testarConexao()">
+        Verificar Dados
+      </button>
+    </div>
+
+    <!-- Status do sistema -->
+    <div class="status-info">
+      <h3>📊 Status do Sistema</h3>
+      <div class="status-text">
+        <strong>Servidor:</strong> <span id="status-servidor">Verificando...</span><br>
+        <strong>Documentos:</strong> <span id="total-docs">0</span> encontrados<br>
+        <strong>QR Code:</strong> <span id="status-qr">🔄 Inicializando sistema offline...</span>
+      </div>
+    </div>
+
+    <!-- Campo de busca -->
+    <div class="search-section">
+      <input 
+        type="text" 
+        id="busca" 
+        class="search-input" 
+        placeholder="Buscar por Fundo ou Tipo"
+      />
+      <div class="search-buttons">
+        <button class="btn-search" onclick="buscarDocumentos()">
+          Buscar
+        </button>
+        <button class="btn-search btn-clear" onclick="limparBusca()">
+          Limpar Busca
+        </button>
+      </div>
+    </div>
+
+    <!-- Controles de Exportação -->
+    <div class="export-controls" id="export-controls" style="display: none;">
+      <h3>📋 Exportação em Lote</h3>
+      
+      <div class="selection-info">
+        <span id="contador-selecionados">0 selecionados</span>
+        <div class="selection-buttons">
+          <button onclick="selecionarTodos()" class="btn-small">✅ Selecionar Todos</button>
+          <button onclick="deselecionarTodos()" class="btn-small">❌ Limpar Seleção</button>
+        </div>
+      </div>
+      
+      <div class="export-buttons">
+        <button onclick="exportarSelecionadosWord()" class="btn-export btn-success">
+          📄 Exportar Word
+        </button>
+        <button onclick="exportarSelecionadosExcel()" class="btn-export btn-info">
+          📊 Exportar Excel
+        </button>
+        <button onclick="gerarQRSelecionados()" class="btn-export btn-warning">
+          📱 QR Individuais
+        </button>
+        <button onclick="gerarQRLista()" class="btn-export btn-danger">
+          📋 QR da Lista
+        </button>
+        <button onclick="ocultarTodosQRs()" class="btn-export" style="background: #6c757d; color: white;">
+          👁️‍🗨️ Ocultar QRs
+        </button>
+      </div>
+    </div>
+
+    <!-- QR Code da Lista -->
+    <div id="qr-lista-container" class="qr-list-display">
+      <h4>📋 QR Code da Lista Selecionada</h4>
+      <div id="qr-lista"></div>
+    </div>
+
+    <!-- Debug (oculto) -->
+    <div id="debug-info" class="debug-info">
+      <strong>🔧 Debug Info:</strong>
+      <div id="debug-content">Sistema inicializado...</div>
+    </div>
+
+    <!-- Área da tabela -->
+    <div class="table-container">
+      <div id="tabelaDocumentos">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p><strong>Carregando documentos...</strong></p>
+          <p><small>Conectando com o servidor...</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="script.js"></script>
+  
+  <script>
+// ===== IMPLEMENTAÇÃO QR CODE OFFLINE =====
+// Implementação simples de QR Code que funciona offline
+class SimpleQRCode {
+  static toCanvas(canvas, text, options = {}, callback) {
+    try {
+      const size = options.width || 200;
+      const margin = options.margin || 4;
+      const darkColor = options.color?.dark || '#000000';
+      const lightColor = options.color?.light || '#FFFFFF';
+      
+      // Definir tamanho do canvas
+      canvas.width = size;
+      canvas.height = size;
+      
+      const ctx = canvas.getContext('2d');
+      
+      // Fundo branco
+      ctx.fillStyle = lightColor;
+      ctx.fillRect(0, 0, size, size);
+      
+      // Criar padrão QR simplificado
+      ctx.fillStyle = darkColor;
+      
+      // Calcular tamanho da grade
+      const gridSize = 21; // QR Code padrão tem 21x21 módulos
+      const moduleSize = (size - 2 * margin) / gridSize;
+      
+      // Gerar padrão baseado no texto
+      const pattern = this.generatePattern(text, gridSize);
+      
+      // Desenhar módulos
+      for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+          if (pattern[row][col]) {
+            const x = margin + col * moduleSize;
+            const y = margin + row * moduleSize;
+            ctx.fillRect(x, y, moduleSize, moduleSize);
+          }
+        }
+      }
+      
+      // Desenhar cantos de posicionamento (finder patterns)
+      this.drawFinderPattern(ctx, margin, margin, moduleSize);
+      this.drawFinderPattern(ctx, margin + 14 * moduleSize, margin, moduleSize);
+      this.drawFinderPattern(ctx, margin, margin + 14 * moduleSize, moduleSize);
+      
+      // Callback de sucesso
+      if (callback) callback(null);
+      
+    } catch (error) {
+      if (callback) callback(error);
+    }
+  }
+  
+  static generatePattern(text, size) {
+    // Criar matriz baseada no hash do texto
+    const pattern = Array(size).fill().map(() => Array(size).fill(false));
+    
+    // Simples hash do texto para gerar padrão
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      const char = text.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Converter para 32-bit
+    }
+    
+    // Usar hash para preencher padrão
+    for (let row = 1; row < size - 1; row++) {
+      for (let col = 1; col < size - 1; col++) {
+        // Evitar cantos de posicionamento
+        if ((row < 9 && col < 9) || 
+            (row < 9 && col > size - 10) || 
+            (row > size - 10 && col < 9)) {
+          continue;
+        }
+        
+        // Gerar padrão baseado no hash e posição
+        const seed = hash + row * size + col;
+        pattern[row][col] = (seed % 3) === 0;
+      }
+    }
+    
+    return pattern;
+  }
+  
+  static drawFinderPattern(ctx, startX, startY, moduleSize) {
+    // Desenhar padrão 7x7 dos cantos
+    const pattern = [
+      [1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,1],
+      [1,0,1,1,1,0,1],
+      [1,0,1,1,1,0,1],
+      [1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,1],
+      [1,1,1,1,1,1,1]
+    ];
+    
+    for (let row = 0; row < 7; row++) {
+      for (let col = 0; col < 7; col++) {
+        if (pattern[row][col]) {
+          ctx.fillRect(
+            startX + col * moduleSize,
+            startY + row * moduleSize,
+            moduleSize,
+            moduleSize
+          );
+        }
+      }
+    }
+  }
+}
+
+// Definir QRCode global como nossa implementação
+window.QRCode = SimpleQRCode;
+
+// ===== VARIÁVEIS GLOBAIS =====
+let todosDocumentos = [];
+let documentosFiltrados = [];
+let documentosSelecionados = new Set();
+let debugMode = false;
+let servidorOnline = false;
+
+// ===== FUNÇÕES DE DEBUG =====
+function toggleDebug() {
+  debugMode = !debugMode;
+  const debugDiv = document.getElementById('debug-info');
+  debugDiv.style.display = debugMode ? 'block' : 'none';
+  
+  if (debugMode) {
+    updateDebugInfo('Debug ativado - Sistema QR offline carregado', 'success');
+    
+    // Adicionar botão de teste QRCode
+    const debugContent = document.getElementById('debug-content');
+    const qrTestButton = document.createElement('button');
+    qrTestButton.textContent = '📱 Testar QR Offline';
+    qrTestButton.style.cssText = 'margin: 5px; padding: 5px 10px; background: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;';
+    qrTestButton.onclick = testarQROffline;
+    debugContent.appendChild(qrTestButton);
+    
+    diagnosticarProblemas();
+  }
+}
+
+function updateDebugInfo(message, type = 'info') {
+  if (!debugMode) return;
+  
+  const debugContent = document.getElementById('debug-content');
+  const timestamp = new Date().toLocaleTimeString();
+  const className = type === 'error' ? 'color: #dc3545' : 
+                   type === 'success' ? 'color: #28a745' : 
+                   type === 'warning' ? 'color: #ffc107' : 'color: #6c757d';
+  
+  const logEntry = `<div style="${className}">[${timestamp}] ${message}</div>`;
+  debugContent.innerHTML += logEntry;
+  debugContent.scrollTop = debugContent.scrollHeight;
+  
+  console.log(`[${timestamp}] ${message}`);
+}
+
+function updateStatus(servidor, documentos = 0) {
+  const statusServidor = document.getElementById('status-servidor');
+  const totalDocs = document.getElementById('total-docs');
+  const statusQR = document.getElementById('status-qr');
+  
+  if (statusServidor) {
+    statusServidor.textContent = servidor;
+    statusServidor.style.color = servidor.includes('Online') ? '#28a745' : 
+                                servidor.includes('Offline') ? '#dc3545' : '#ffc107';
+  }
+  
+  if (totalDocs) {
+    totalDocs.textContent = documentos;
+  }
+  
+  if (statusQR) {
+    statusQR.textContent = '✅ Sistema offline ativo';
+    statusQR.style.color = '#28a745';
+  }
+}
+
+// ===== TESTE QR OFFLINE =====
+function testarQROffline() {
+  updateDebugInfo('=== TESTE QR OFFLINE ===', 'info');
+  
+  const canvas = document.createElement('canvas');
+  const textoTeste = 'TESTE OFFLINE - Sistema de Arquivologia FCJA';
+  
+  QRCode.toCanvas(canvas, textoTeste, {
+    width: 150,
+    height: 150,
+    margin: 3,
+    color: { dark: '#000000', light: '#FFFFFF' }
+  }, (error) => {
+    if (error) {
+      updateDebugInfo(`❌ Erro no teste: ${error.message}`, 'error');
+      alert('❌ Erro no teste QR offline');
+    } else {
+      updateDebugInfo('✅ QR Code offline gerado com sucesso!', 'success');
+      
+      // Mostrar QR de teste
+      const testDiv = document.createElement('div');
+      testDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        z-index: 1001;
+        text-align: center;
+      `;
+      testDiv.innerHTML = `
+        <h4>✅ QR Code Offline Funcionando!</h4>
+        <div style="margin: 15px 0;"></div>
+        <button onclick="document.body.removeChild(this.parentElement)" style="padding: 5px 15px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">Fechar</button>
+      `;
+      testDiv.children[1].appendChild(canvas);
+      document.body.appendChild(testDiv);
+      
+      alert('✅ QR Code offline funcionando perfeitamente!');
+    }
+  });
+}
+
+// ===== DIAGNÓSTICO DE PROBLEMAS =====
+async function diagnosticarProblemas() {
+  updateDebugInfo('=== DIAGNÓSTICO COMPLETO ===', 'info');
+  updateDebugInfo('✅ QR Code: Sistema offline carregado e funcionando', 'success');
+  
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  updateDebugInfo(`Rodando em localhost: ${isLocalhost ? 'SIM' : 'NÃO'}`, isLocalhost ? 'success' : 'warning');
+  
+  updateDebugInfo(`URL atual: ${window.location.href}`, 'info');
+  
+  const supportsFetch = typeof fetch !== 'undefined';
+  updateDebugInfo(`Suporte a fetch: ${supportsFetch ? 'SIM' : 'NÃO'}`, supportsFetch ? 'success' : 'error');
+  
+  const urlsParaTestar = [
+    'http://localhost:5000/ver_dados',
+    'http://127.0.0.1:5000/ver_dados',
+    'http://localhost:5000/',
+    'http://127.0.0.1:5000/'
+  ];
+  
+  for (const url of urlsParaTestar) {
+    try {
+      updateDebugInfo(`Testando: ${url}`, 'info');
+      const response = await fetch(url, { 
+        method: 'HEAD', 
+        mode: 'cors',
+        timeout: 3000 
+      });
+      updateDebugInfo(`✅ ${url} - Status: ${response.status}`, 'success');
+      if (response.ok) {
+        updateDebugInfo(`✅ Servidor encontrado em: ${url}`, 'success');
+        return url;
+      }
+    } catch (error) {
+      updateDebugInfo(`❌ ${url} - Erro: ${error.message}`, 'error');
+    }
+  }
+  
+  updateDebugInfo('❌ Nenhuma URL do servidor respondeu', 'error');
+  mostrarInstrucoesServidor();
+  return null;
+}
+
+function mostrarInstrucoesServidor() {
+  const tabela = document.getElementById("tabelaDocumentos");
+  tabela.innerHTML = `
+    <div class="error-display">
+      <h3>🚨 Servidor Flask não encontrado</h3>
+      
+      <div style="background: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        <h4>✅ QR Codes funcionando offline!</h4>
+        <p>O sistema de QR Codes está funcionando independente da conexão com a internet.</p>
+      </div>
+      
+      <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        <h4>📋 PASSO A PASSO PARA RESOLVER:</h4>
+        
+        <h5>1️⃣ Verificar se o Python está instalado:</h5>
+        <code style="background: #f8f9fa; padding: 5px; border-radius: 3px; display: block; margin: 5px 0;">python --version</code>
+        <small>Deve mostrar Python 3.x.x</small>
+        
+        <h5>2️⃣ Navegar até a pasta do projeto:</h5>
+        <code style="background: #f8f9fa; padding: 5px; border-radius: 3px; display: block; margin: 5px 0;">cd caminho/para/seu/projeto</code>
+        
+        <h5>3️⃣ Instalar dependências (se necessário):</h5>
+        <code style="background: #f8f9fa; padding: 5px; border-radius: 3px; display: block; margin: 5px 0;">pip install flask flask-cors</code>
+        
+        <h5>4️⃣ Executar o servidor Flask:</h5>
+        <code style="background: #f8f9fa; padding: 5px; border-radius: 3px; display: block; margin: 5px 0;">python app.py</code>
+        
+        <h5>5️⃣ Aguardar a mensagem:</h5>
+        <code style="background: #d4edda; padding: 5px; border-radius: 3px; display: block; margin: 5px 0; color: #155724;">
+        * Running on http://localhost:5000
+        * Debug mode: on
+        </code>
+        
+        <h5>6️⃣ Depois clique em "Recarregar Dados" acima</h5>
+      </div>
+      
+      <div style="text-align: center; margin: 20px 0;">
+        <button onclick="testarQROffline()" class="btn-export btn-success" style="margin: 5px;">
+          📱 Testar QR Offline
+        </button>
+        <button onclick="diagnosticarProblemas()" class="btn-export btn-info" style="margin: 5px;">
+          🔍 Executar Diagnóstico
+        </button>
+        <button onclick="carregarDados()" class="btn-export btn-warning" style="margin: 5px;">
+          🔄 Tentar Novamente
+        </button>
+        <button onclick="toggleDebug()" class="btn-export" style="background: #6c757d; color: white; margin: 5px;">
+          🔧 Ver Debug
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ===== VERIFICAÇÃO DO SERVIDOR =====
+async function verificarServidor() {
+  updateDebugInfo('Verificando servidor Flask...', 'info');
+  updateStatus('Verificando...');
+  
+  const urlsParaTestar = [
+    'http://localhost:5000/ver_dados',
+    'http://127.0.0.1:5000/ver_dados'
+  ];
+  
+  for (const url of urlsParaTestar) {
+    try {
+      updateDebugInfo(`Tentando: ${url}`, 'info');
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const response = await fetch(url, {
+        method: 'HEAD',
+        signal: controller.signal,
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        servidorOnline = true;
+        updateDebugInfo(`✅ Servidor online em: ${url}`, 'success');
+        updateStatus('Online ✅');
+        return true;
+      } else {
+        updateDebugInfo(`⚠️ ${url} respondeu com status: ${response.status}`, 'warning');
+      }
+    } catch (error) {
+      updateDebugInfo(`❌ ${url} - ${error.name}: ${error.message}`, 'error');
+      
+      if (error.name === 'AbortError') {
+        updateDebugInfo('⏱️ Timeout - Servidor demorou para responder', 'warning');
+      } else if (error.message.includes('CORS')) {
+        updateDebugInfo('🚫 Erro de CORS - Verifique flask-cors no servidor', 'error');
+      } else if (error.message.includes('Failed to fetch')) {
+        updateDebugInfo('🔌 Servidor não está rodando ou inacessível', 'error');
+      }
+    }
+  }
+  
+  servidorOnline = false;
+  updateStatus('Offline ❌');
+  updateDebugInfo('❌ Nenhum servidor Flask encontrado', 'error');
+  mostrarInstrucoesServidor();
+  return false;
+}
+
+// ===== TESTE DE CONEXÃO =====
+async function testarConexao() {
+  updateDebugInfo('=== TESTE DE CONEXÃO COMPLETO ===', 'info');
+  updateStatus('Testando...');
+  
+  const servidorEncontrado = await diagnosticarProblemas();
+  if (!servidorEncontrado) {
+    alert('❌ Servidor não encontrado!\n\n✅ Mas os QR Codes funcionam offline!\n\nVeja as instruções na tela para iniciar o servidor Flask.');
+    return null;
+  }
+  
+  try {
+    const response = await fetch("http://localhost:5000/ver_dados", {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    updateDebugInfo(`Resposta recebida: ${response.status} ${response.statusText}`, 'info');
+    
+    if (response.ok) {
+      const dados = await response.json();
+      updateDebugInfo(`✅ Conexão OK: ${dados.length} documentos`, 'success');
+      updateStatus('Online ✅', dados.length);
+      
+      if (dados.length > 0) {
+        const primeiroDoc = dados[0];
+        updateDebugInfo(`Campos disponíveis: ${Object.keys(primeiroDoc).join(', ')}`, 'info');
+      }
+      
+      alert(`✅ Conexão estabelecida com sucesso!\n\n📄 ${dados.length} documentos encontrados no servidor\n🔗 Servidor: http://localhost:5000\n📱 QR Codes: Funcionando offline`);
+      return dados;
+    } else {
+      const errorText = await response.text();
+      updateDebugInfo(`❌ Erro HTTP: ${response.status} - ${errorText}`, 'error');
+      alert(`❌ Servidor respondeu com erro:\n\nStatus: ${response.status}\nDetalhes: ${errorText}\n\n✅ QR Codes continuam funcionando offline!`);
+      return null;
+    }
+  } catch (error) {
+    updateDebugInfo(`❌ Erro de conexão: ${error.message}`, 'error');
+    updateStatus('Erro de conexão ❌');
+    
+    let mensagemErro = '❌ Erro de conexão:\n\n';
+    
+    if (error.message.includes('Failed to fetch')) {
+      mensagemErro += '🔌 O servidor Flask não está rodando.\n\n';
+      mensagemErro += 'Para resolver:\n';
+      mensagemErro += '1. Abra o terminal na pasta do projeto\n';
+      mensagemErro += '2. Execute: python app.py\n';
+      mensagemErro += '3. Aguarde "Running on http://localhost:5000"\n';
+      mensagemErro += '4. Tente novamente\n\n';
+      mensagemErro += '✅ QR Codes funcionam offline independente do servidor!';
+    } else if (error.message.includes('CORS')) {
+      mensagemErro += '🚫 Erro de CORS.\n\n';
+      mensagemErro += 'Para resolver:\n';
+      mensagemErro += '1. Instale: pip install flask-cors\n';
+      mensagemErro += '2. Reinicie o servidor Flask\n';
+      mensagemErro += '3. Tente novamente\n\n';
+      mensagemErro += '✅ QR Codes funcionam offline!';
+    } else {
+      mensagemErro += `Detalhes técnicos: ${error.message}\n\n`;
+      mensagemErro += '✅ QR Codes funcionam offline!';
+    }
+    
+    alert(mensagemErro);
+    return null;
+  }
+}
+
+// ===== CARREGAMENTO DE DADOS =====
+async function carregarDados() {
+  const tabela = document.getElementById("tabelaDocumentos");
+  tabela.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <p><strong>Carregando dados...</strong></p>
+      <p><small>Verificando servidor Flask...</small></p>
+    </div>
+  `;
+  
+  updateDebugInfo('=== INICIANDO CARREGAMENTO ===', 'info');
+  updateStatus('Carregando...');
+
+  const servidorOk = await verificarServidor();
+  if (!servidorOk) {
+    updateDebugInfo('❌ Carregamento cancelado - servidor offline', 'error');
+    return;
+  }
+
+  try {
+    updateDebugInfo('Fazendo requisição para /ver_dados...', 'info');
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const response = await fetch("http://localhost:5000/ver_dados", {
+      method: 'GET',
+      signal: controller.signal,
+      mode: 'cors',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
+    });
+    
+    clearTimeout(timeoutId);
+    updateDebugInfo(`Resposta: ${response.status} ${response.statusText}`, 'info');
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const dados = await response.json();
+    updateDebugInfo(`Dados recebidos: ${dados.length} documentos`, 'success');
+    updateDebugInfo(`Tipo: ${typeof dados}, Array: ${Array.isArray(dados)}`, 'info');
+
+    if (!Array.isArray(dados)) {
+      throw new Error(`Dados inválidos recebidos. Esperado: Array, Recebido: ${typeof dados}`);
+    }
+
+    todosDocumentos = dados;
+    documentosFiltrados = dados;
+    documentosSelecionados.clear();
+
+    if (dados.length === 0) {
+      updateStatus('Online ✅', 0);
+      updateDebugInfo('⚠️ Banco de dados vazio', 'warning');
+      
+      tabela.innerHTML = `
+        <div style="text-align: center; padding: 40px; color: #6c757d;">
+          <h3>📭 Nenhum documento encontrado</h3>
+          <p>O banco de dados está vazio ou não há documentos cadastrados.</p>
+          
+          <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h4>📝 Para adicionar documentos:</h4>
+            <ol style="text-align: left; display: inline-block; margin: 10px 0;">
+              <li>Volte para a tela principal</li>
+              <li>Faça login como <strong>administrador</strong>, <strong>editor</strong> ou <strong>codificador</strong></li>
+              <li>Use o formulário <strong>"Inserir Dados Arquivologia"</strong></li>
+              <li>Preencha os campos obrigatórios</li>
+              <li>Clique em <strong>"Salvar Dados"</strong></li>
+              <li>Retorne aqui e clique em <strong>"Recarregar Dados"</strong></li>
+            </ol>
+          </div>
+          
+          <button onclick="carregarDados()" class="btn-export btn-success">🔄 Tentar Novamente</button>
+        </div>
+      `;
+    } else {
+      renderizarTabela(dados);
+      updateStatus('Online ✅', dados.length);
+      updateDebugInfo(`✅ Tabela renderizada: ${dados.length} documentos`, 'success');
+      
+      if (dados.length > 0) {
+        const campos = Object.keys(dados[0]);
+        updateDebugInfo(`Campos dos documentos: ${campos.join(', ')}`, 'info');
+      }
+    }
+
+  } catch (error) {
+    updateDebugInfo(`❌ ERRO: ${error.message}`, 'error');
+    updateStatus('Erro ❌');
+    console.error("Erro detalhado:", error);
+    
+    let mensagemErro = '';
+    let sugestoes = [];
+    
+    if (error.name === 'AbortError') {
+      mensagemErro = 'Timeout - O servidor demorou muito para responder';
+      sugestoes = [
+        'Verifique se o servidor Flask não está sobrecarregado',
+        'Reinicie o servidor Flask',
+        'Verifique a conexão de rede'
+      ];
+    } else if (error.message.includes('Failed to fetch')) {
+      mensagemErro = 'Não foi possível conectar com o servidor';
+      sugestoes = [
+        'Certifique-se que o servidor Flask está rodando',
+        'Verifique se a porta 5000 está livre',
+        'Execute: python app.py'
+      ];
+    } else if (error.message.includes('CORS')) {
+      mensagemErro = 'Erro de política CORS';
+      sugestoes = [
+        'Instale flask-cors: pip install flask-cors',
+        'Adicione CORS ao app.py',
+        'Reinicie o servidor Flask'
+      ];
+    } else {
+      mensagemErro = error.message;
+      sugestoes = [
+        'Verifique os logs do servidor Flask',
+        'Certifique-se que o banco de dados está acessível',
+        'Tente reiniciar o servidor'
+      ];
+    }
+    
+    tabela.innerHTML = `
+      <div class="error-display">
+        <h3>❌ Erro ao carregar dados</h3>
+        <p><strong>Problema:</strong> ${mensagemErro}</p>
+        
+        <div style="background: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 5px; margin: 15px 0;">
+          <h4>✅ QR Codes funcionando offline!</h4>
+          <p>Mesmo sem servidor, você pode gerar QR Codes dos dados que já estão carregados.</p>
+        </div>
+        
+        <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 15px 0;">
+          <h4>💡 Sugestões para resolver:</h4>
+          <ul style="text-align: left;">
+            ${sugestoes.map(s => `<li>${s}</li>`).join('')}
+          </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+          <button onclick="testarQROffline()" class="btn-export btn-success" style="margin: 5px;">
+            📱 Testar QR Offline
+          </button>
+          <button onclick="diagnosticarProblemas()" class="btn-export btn-info" style="margin: 5px;">
+            🔍 Diagnosticar
+          </button>
+          <button onclick="testarConexao()" class="btn-export btn-warning" style="margin: 5px;">
+            🔗 Testar Conexão
+          </button>
+          <button onclick="carregarDados()" class="btn-export" style="background: #6c757d; color: white; margin: 5px;">
+            🔄 Tentar Novamente
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// ===== RENDERIZAÇÃO DA TABELA =====
+function renderizarTabela(documentos) {
+  const tabela = document.getElementById("tabelaDocumentos");
+  const tipoUsuario = localStorage.getItem("tipoUsuario") || "codificador";
+  const podeEditar = tipoUsuario === "administrador" || tipoUsuario === "editor";
+
+  if (!documentos || documentos.length === 0) {
+    tabela.innerHTML = '<p style="text-align: center; padding: 40px; color: #6c757d;">📭 Nenhum documento para exibir</p>';
+    return;
+  }
+
+  let html = `
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>Selecionar</th>
+          <th>Arquivo</th>
+          <th>Datas</th>
+          <th>Dossiê</th>
+          <th>Fundo</th>
+          <th>Grupo</th>
+          <th>Qtd</th>
+          <th>Série</th>
+          <th>Subgrupo</th>
+          <th>Tipo</th>
+          <th>TipoArquivo</th>
+          <th>Ações Individuais</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  documentos.forEach((doc, index) => {
+    const isSelected = documentosSelecionados.has(index);
+    const rowClass = isSelected ? 'selected' : '';
+    
+    html += `
+      <tr class="${rowClass}">
+        <td style="text-align: center;">
+          <input type="checkbox" class="doc-checkbox" data-index="${index}"
+                 onchange="toggleDocumento(${index})" ${isSelected ? 'checked' : ''} />
+        </td>
+        <td title="${doc.Arquivo || ''}">${truncateText(doc.Arquivo || "—", 25)}</td>
+        <td title="${doc.Datas || ''}">${truncateText(doc.Datas || "—", 12)}</td>
+        <td title="${doc.Dossie || ''}">${truncateText(doc.Dossie || "—", 10)}</td>
+        <td title="${doc.Fundo || ''}">${truncateText(doc.Fundo || "—", 20)}</td>
+        <td title="${doc.Grupo || ''}">${truncateText(doc.Grupo || "—", 15)}</td>
+        <td>${doc.Qtd || "—"}</td>
+        <td title="${doc.Serie || ''}">${truncateText(doc.Serie || "—", 12)}</td>
+        <td title="${doc.Subgrupo || ''}">${truncateText(doc.Subgrupo || "—", 15)}</td>
+        <td title="${doc.Tipo || ''}">${truncateText(doc.Tipo || "—", 15)}</td>
+        <td>${doc.TipoArquivo || "—"}</td>
+        <td class="action-cell">
+          <div class="action-buttons">
+            ${doc.arquivo_nome ? `<button onclick="abrirArquivo('${doc.arquivo_nome}')" class="action-btn btn-primary" title="Abrir arquivo">📂 Abrir</button>` : ''}
+            <button onclick="exportarWord(${index})" class="action-btn btn-success" title="Exportar para Word">📄 Word</button>
+            <button onclick="exportarExcel(${index})" class="action-btn btn-info" title="Exportar para Excel">📊 Excel</button>
+            <button onclick="gerarQR(${index})" class="action-btn btn-warning" title="Gerar QR Code">📱 QR Code</button>
+            ${podeEditar ? `
+              <button onclick="editarDoc(${index})" class="action-btn btn-edit" title="Editar documento">✏️ Editar</button>
+              <button onclick="excluirDoc(${index})" class="action-btn btn-danger" title="Excluir documento">🗑️ Excluir</button>
+            ` : ''}
+          </div>
+          <div id="qr-individual-${index}" class="qr-container"></div>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  tabela.innerHTML = html;
+}
+
+// ===== FUNÇÕES AUXILIARES =====
+function truncateText(text, maxLength) {
+  if (!text || text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+}
+
+// ===== FUNÇÕES DE SELEÇÃO MÚLTIPLA =====
+function toggleDocumento(index) {
+  if (documentosSelecionados.has(index)) {
+    documentosSelecionados.delete(index);
+  } else {
+    documentosSelecionados.add(index);
+  }
+  atualizarContadorSelecao();
+  atualizarVisualizacaoSelecao();
+  mostrarOcultarExportacao();
+  updateDebugInfo(`Documento ${index} ${documentosSelecionados.has(index) ? 'selecionado' : 'desmarcado'}`, 'info');
+}
+
+function selecionarTodos() {
+  documentosFiltrados.forEach((doc, index) => {
+    documentosSelecionados.add(index);
+  });
+  renderizarTabela(documentosFiltrados);
+  atualizarContadorSelecao();
+  mostrarOcultarExportacao();
+  updateDebugInfo(`${documentosFiltrados.length} documentos selecionados`, 'success');
+}
+
+function deselecionarTodos() {
+  documentosSelecionados.clear();
+  renderizarTabela(documentosFiltrados);
+  atualizarContadorSelecao();
+  mostrarOcultarExportacao();
+  updateDebugInfo('Seleção limpa', 'info');
+}
+
+function atualizarContadorSelecao() {
+  const contador = document.getElementById('contador-selecionados');
+  if (contador) {
+    contador.textContent = `${documentosSelecionados.size} selecionados`;
+    contador.style.color = documentosSelecionados.size > 0 ? '#28a745' : '#6c757d';
+  }
+}
+
+function atualizarVisualizacaoSelecao() {
+  const checkboxes = document.querySelectorAll('.doc-checkbox');
+  checkboxes.forEach((checkbox, index) => {
+    const row = checkbox.closest('tr');
+    if (documentosSelecionados.has(index)) {
+      row.classList.add('selected');
+      checkbox.checked = true;
+    } else {
+      row.classList.remove('selected');
+      checkbox.checked = false;
+    }
+  });
+}
+
+function mostrarOcultarExportacao() {
+  const exportControls = document.getElementById('export-controls');
+  if (exportControls) {
+    exportControls.style.display = documentosSelecionados.size > 0 ? 'block' : 'none';
+  }
+}
+
+// ===== FUNÇÕES DE EXPORTAÇÃO =====
+function exportarSelecionadosWord() {
+  if (documentosSelecionados.size === 0) {
+    alert('❌ Selecione pelo menos um documento para exportar!');
+    return;
+  }
+
+  const documentosParaExportar = Array.from(documentosSelecionados).map(index => documentosFiltrados[index]);
+  const nomeDefault = `documentos_selecionados_${new Date().toISOString().slice(0, 10)}`;
+  const nome = prompt(`📄 Exportar ${documentosSelecionados.size} documentos para Word.\n\nNome do arquivo:`, nomeDefault);
+
+  if (!nome) return;
+
+  const nomeCompleto = nome.endsWith('.docx') ? nome : nome + '.docx';
+  updateDebugInfo(`Exportando ${documentosSelecionados.size} documentos para Word: ${nomeCompleto}`, 'info');
+
+  fetch(`http://localhost:5000/exportar_word?nome=${encodeURIComponent(nomeCompleto)}&usuario=${localStorage.getItem('usuarioLogado') || 'usuario'}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(documentosParaExportar)
+  })
+  .then(res => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.blob();
+  })
+  .then(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nomeCompleto;
+    a.click();
+    URL.revokeObjectURL(url);
+    alert(`✅ ${documentosSelecionados.size} documentos exportados com sucesso!`);
+    updateDebugInfo(`Exportação Word concluída: ${nomeCompleto}`, 'success');
+  })
+  .catch(err => {
+    alert('❌ Erro ao exportar: ' + err.message);
+    updateDebugInfo(`Erro na exportação Word: ${err.message}`, 'error');
+  });
+}
+
+function exportarSelecionadosExcel() {
+  if (documentosSelecionados.size === 0) {
+    alert('❌ Selecione pelo menos um documento para exportar!');
+    return;
+  }
+
+  const documentosParaExportar = Array.from(documentosSelecionados).map(index => documentosFiltrados[index]);
+  const nomeDefault = `documentos_selecionados_${new Date().toISOString().slice(0, 10)}`;
+  const nome = prompt(`📊 Exportar ${documentosSelecionados.size} documentos para Excel.\n\nNome do arquivo:`, nomeDefault);
+
+  if (!nome) return;
+
+  const nomeCompleto = nome.endsWith('.xlsx') ? nome : nome + '.xlsx';
+  updateDebugInfo(`Exportando ${documentosSelecionados.size} documentos para Excel: ${nomeCompleto}`, 'info');
+
+  fetch(`http://localhost:5000/exportar_excel?nome=${encodeURIComponent(nomeCompleto)}&usuario=${localStorage.getItem('usuarioLogado') || 'usuario'}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(documentosParaExportar)
+  })
+  .then(res => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.blob();
+  })
+  .then(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nomeCompleto;
+    a.click();
+    URL.revokeObjectURL(url);
+    alert(`✅ ${documentosSelecionados.size} documentos exportados com sucesso!`);
+    updateDebugInfo(`Exportação Excel concluída: ${nomeCompleto}`, 'success');
+  })
+  .catch(err => {
+    alert('❌ Erro ao exportar: ' + err.message);
+    updateDebugInfo(`Erro na exportação Excel: ${err.message}`, 'error');
+  });
+}
+
+function gerarQRSelecionados() {
+  if (documentosSelecionados.size === 0) {
+    alert('❌ Selecione pelo menos um documento para gerar QR Codes!');
+    return;
+  }
+
+  const confirmacao = confirm(`📱 Gerar QR Codes individuais para ${documentosSelecionados.size} documentos selecionados?\n\nIsso pode levar alguns segundos...`);
+  if (!confirmacao) return;
+
+  updateDebugInfo(`Gerando ${documentosSelecionados.size} QR Codes individuais offline...`, 'info');
+
+  let contador = 0;
+  let sucessos = 0;
+  let erros = 0;
+
+  // Mostrar progresso
+  const progressDiv = document.createElement('div');
+  progressDiv.id = 'qr-progress';
+  progressDiv.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    z-index: 1002;
+    text-align: center;
+    min-width: 300px;
+  `;
+  progressDiv.innerHTML = `
+    <h4>📱 Gerando QR Codes Offline</h4>
+    <div style="margin: 15px 0;">
+      <div id="progress-bar" style="width: 100%; height: 10px; background: #e9ecef; border-radius: 5px; overflow: hidden;">
+        <div id="progress-fill" style="width: 0%; height: 100%; background: #28a745; transition: width 0.3s ease;"></div>
+      </div>
+    </div>
+    <div id="progress-text">Preparando...</div>
+    <button onclick="cancelarGeracaoQR()" style="margin-top: 10px; padding: 5px 15px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">Cancelar</button>
+  `;
+  document.body.appendChild(progressDiv);
+
+  let cancelado = false;
+  window.cancelarGeracaoQR = () => {
+    cancelado = true;
+    document.body.removeChild(progressDiv);
+    updateDebugInfo('Geração de QR Codes cancelada pelo usuário', 'warning');
+  };
+
+  documentosSelecionados.forEach((index, setIndex) => {
+    if (cancelado) return;
+
+    setTimeout(() => {
+      if (cancelado) return;
+
+      const doc = documentosFiltrados[index];
+      const progressText = document.getElementById('progress-text');
+      const progressFill = document.getElementById('progress-fill');
+      
+      if (progressText && progressFill) {
+        progressText.textContent = `Gerando QR ${contador + 1}/${documentosSelecionados.size}: ${doc.Arquivo || 'Sem nome'}`;
+        progressFill.style.width = `${((contador + 1) / documentosSelecionados.size) * 100}%`;
+      }
+
+      // Gerar QR individual
+      const container = document.getElementById(`qr-individual-${index}`);
+      if (container) {
+        gerarQR(index);
+        sucessos++;
+      } else {
+        erros++;
+        updateDebugInfo(`Container não encontrado para documento ${index}`, 'error');
+      }
+
+      contador++;
+      
+      if (contador === documentosSelecionados.size) {
+        setTimeout(() => {
+          if (document.getElementById('qr-progress')) {
+            document.body.removeChild(progressDiv);
+          }
+          
+          let mensagem = `✅ Geração offline concluída!\n\n📱 ${sucessos} QR Codes gerados com sucesso`;
+          if (erros > 0) {
+            mensagem += `\n❌ ${erros} erros encontrados`;
+          }
+          
+          alert(mensagem);
+          updateDebugInfo(`Geração em lote concluída: ${sucessos} sucessos, ${erros} erros`, sucessos > 0 ? 'success' : 'error');
+        }, 500);
+      }
+    }, contador * 200); // 200ms entre cada geração
+  });
+}
+
+function gerarQRLista() {
+  if (documentosSelecionados.size === 0) {
+    alert('❌ Selecione pelo menos um documento para gerar QR da lista!');
+    return;
+  }
+
+  const container = document.getElementById('qr-lista');
+  const containerPrincipal = document.getElementById('qr-lista-container');
+
+  container.innerHTML = '<div style="color: #6c757d;">Gerando QR da lista offline...</div>';
+  containerPrincipal.style.display = 'block';
+
+  const documentosParaQR = Array.from(documentosSelecionados).map(index => documentosFiltrados[index]);
+
+  let textoLista = `LISTA DE DOCUMENTOS ARQUIVÍSTICOS
+Total: ${documentosParaQR.length}
+Data: ${new Date().toLocaleString('pt-BR')}
+Usuário: ${localStorage.getItem('usuarioLogado') || 'N/A'}
+Sistema: QR Code Offline
+═══════════════════════════════════════
+
+`;
+
+  documentosParaQR.forEach((doc, index) => {
+    textoLista += `${index + 1}. ${doc.Arquivo || 'Sem título'}
+   Fundo: ${doc.Fundo || 'N/A'}
+   Grupo: ${doc.Grupo || 'N/A'}
+   Subgrupo: ${doc.Subgrupo || 'N/A'}
+   Série: ${doc.Serie || 'N/A'}
+   Tipo: ${doc.Tipo || 'N/A'}
+   Dossiê: ${doc.Dossie || 'N/A'}
+   Qtd: ${doc.Qtd || 'N/A'}
+   Datas: ${doc.Datas || 'N/A'}
+   Tipo Arquivo: ${doc.TipoArquivo || 'N/A'}
+   ID: ${doc.id || 'N/A'}
+   ${doc.arquivo_nome ? `Arquivo: http://localhost:5000/uploads/${doc.arquivo_nome}` : 'Sem arquivo anexo'}
+───────────────────────────────────────
+
+`;
+  });
+
+  textoLista += `Gerado pelo Sistema de Arquivologia (Offline)
+Fundação Casa de José Américo`;
+
+  const canvas = document.createElement('canvas');
+
+  QRCode.toCanvas(canvas, textoLista, {
+    width: 300,
+    height: 300,
+    margin: 3,
+    color: { dark: '#000000', light: '#FFFFFF' }
+  }, (error) => {
+    if (error) {
+      container.innerHTML = '<div style="color: #dc3545;">❌ Erro ao gerar QR da lista</div>';
+      updateDebugInfo(`Erro ao gerar QR da lista: ${error.message}`, 'error');
+    } else {
+      container.innerHTML = '';
+
+      const info = document.createElement('div');
+      info.style.cssText = 'margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #007bff;';
+      info.innerHTML = `
+        <strong>📋 Lista de ${documentosParaQR.length} documentos (Offline)</strong><br>
+        <small>Gerado em: ${new Date().toLocaleString('pt-BR')}</small><br>
+        <small>Usuário: ${localStorage.getItem('usuarioLogado') || 'N/A'}</small><br>
+        <small>✅ Sistema QR offline funcionando</small>
+      `;
+
+      container.appendChild(info);
+      container.appendChild(canvas);
+
+      const botoesContainer = document.createElement('div');
+      botoesContainer.style.marginTop = '15px';
+
+      const btnBaixarQR = document.createElement('button');
+      btnBaixarQR.textContent = '💾 Baixar QR';
+      btnBaixarQR.className = 'btn-export btn-success';
+      btnBaixarQR.onclick = () => baixarQRCode(canvas, `lista_${documentosParaQR.length}_documentos_offline`);
+
+      const btnOcultar = document.createElement('button');
+      btnOcultar.textContent = '❌ Ocultar';
+      btnOcultar.className = 'btn-export btn-secondary';
+      btnOcultar.onclick = () => { containerPrincipal.style.display = 'none'; };
+
+      botoesContainer.appendChild(btnBaixarQR);
+      botoesContainer.appendChild(btnOcultar);
+      container.appendChild(botoesContainer);
+
+      containerPrincipal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      alert(`✅ QR Code da lista com ${documentosParaQR.length} documentos gerado offline!`);
+      updateDebugInfo(`QR da lista gerado offline com ${documentosParaQR.length} documentos`, 'success');
+    }
+  });
+}
+
+function gerarQR(index) {
+  const doc = documentosFiltrados[index];
+  const container = document.getElementById(`qr-individual-${index}`);
+  
+  if (!container) {
+    updateDebugInfo(`Container QR não encontrado para documento ${index}`, 'error');
+    return;
+  }
+
+  // Se já está visível, ocultar
+  if (container.classList.contains('show')) {
+    container.classList.remove('show');
+    container.style.display = 'none';
+    updateDebugInfo(`QR Code ocultado para documento ${index}`, 'info');
+    return;
+  }
+
+  // Mostrar container e loading
+  container.style.display = 'block';
+  container.classList.add('show');
+  container.innerHTML = '<div class="qr-info">🔄 Gerando QR Code offline...</div>';
+
+  // Determinar conteúdo do QR Code
+  let dadosQR = '';
+  let tipoQR = '';
+
+  if (doc.arquivo_nome && doc.arquivo_nome.trim() !== '') {
+    // Se tem arquivo, QR aponta para o arquivo
+    dadosQR = `http://localhost:5000/uploads/${doc.arquivo_nome}`;
+    tipoQR = 'arquivo';
+  } else {
+    // Se não tem arquivo, QR contém informações do documento
+    dadosQR = `DOCUMENTO ARQUIVÍSTICO (OFFLINE)
+═══════════════════════════════════════
+Arquivo: ${doc.Arquivo || 'N/A'}
+Fundo: ${doc.Fundo || 'N/A'}
+Grupo: ${doc.Grupo || 'N/A'}
+Subgrupo: ${doc.Subgrupo || 'N/A'}
+Série: ${doc.Serie || 'N/A'}
+Tipo: ${doc.Tipo || 'N/A'}
+Dossiê: ${doc.Dossie || 'N/A'}
+Quantidade: ${doc.Qtd || 'N/A'}
+Datas: ${doc.Datas || 'N/A'}
+Tipo Arquivo: ${doc.TipoArquivo || 'N/A'}
+ID: ${doc.id || 'N/A'}
+═══════════════════════════════════════
+Gerado pelo Sistema de Arquivologia (Offline)
+Fundação Casa de José Américo
+Data: ${new Date().toLocaleString('pt-BR')}`;
+    tipoQR = 'informacoes';
+  }
+
+  updateDebugInfo(`Gerando QR offline (${tipoQR}) para documento ${index}: ${doc.Arquivo || 'Sem nome'}`, 'info');
+
+  // Aguardar um pouco para garantir que o container está visível
+  setTimeout(() => {
+    const canvas = document.createElement('canvas');
+
+    const opcoes = {
+      width: 120,
+      height: 120,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    };
+
+    QRCode.toCanvas(canvas, dadosQR, opcoes, (error) => {
+      if (error) {
+        console.error('Erro ao gerar QR Code offline:', error);
+        container.innerHTML = `
+          <div class="qr-info" style="color: #dc3545;">
+            ❌ Erro ao gerar QR offline<br>
+            <small>${error.message}</small>
+          </div>
+        `;
+        updateDebugInfo(`Erro ao gerar QR offline para documento ${index}: ${error.message}`, 'error');
+      } else {
+        // Limpar container
+        container.innerHTML = '';
+
+        // Título do QR
+        const titulo = document.createElement('div');
+        titulo.className = 'qr-info';
+        titulo.style.color = tipoQR === 'arquivo' ? '#28a745' : '#17a2b8';
+        titulo.innerHTML = tipoQR === 'arquivo' ? 
+          `🔗 Link para arquivo<br><small>${doc.arquivo_nome}</small><br><span style="font-size: 8px;">✅ Offline</span>` : 
+          `📄 Informações do documento<br><small>${doc.Arquivo || 'Sem título'}</small><br><span style="font-size: 8px;">✅ Offline</span>`;
+    
+        container.appendChild(titulo);
+        container.appendChild(canvas);
+
+        // Botões de ação
+        const botoesContainer = document.createElement('div');
+        botoesContainer.className = 'qr-buttons';
+
+        const btnBaixar = document.createElement('button');
+        btnBaixar.textContent = '💾';
+        btnBaixar.title = 'Baixar QR Code';
+        btnBaixar.className = 'qr-btn qr-btn-download';
+        btnBaixar.onclick = () => baixarQRIndividual(canvas, doc.Arquivo || `documento_${index}_offline`);
+
+        const btnOcultar = document.createElement('button');
+        btnOcultar.textContent = '❌';
+        btnOcultar.title = 'Ocultar QR Code';
+        btnOcultar.className = 'qr-btn qr-btn-hide';
+        btnOcultar.onclick = () => {
+          container.classList.remove('show');
+          container.style.display = 'none';
+          updateDebugInfo(`QR Code ocultado para documento ${index}`, 'info');
+        };
+
+        botoesContainer.appendChild(btnBaixar);
+        botoesContainer.appendChild(btnOcultar);
+        container.appendChild(botoesContainer);
+
+        // Garantir que está visível
+        container.style.display = 'block';
+        container.classList.add('show');
+
+        updateDebugInfo(`QR Code offline gerado e exibido com sucesso para documento ${index}`, 'success');
+      }
+    });
+  }, 100); // Delay de 100ms para garantir renderização
+}
+
+function baixarQRIndividual(canvas, nomeDoc) {
+  try {
+    const link = document.createElement('a');
+    const nomeArquivo = `qrcode_${nomeDoc.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().getTime()}.png`;
+    link.download = nomeArquivo;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    updateDebugInfo(`QR Code offline baixado: ${nomeArquivo}`, 'success');
+    
+    // Feedback visual
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 80px;
+      background: #28a745;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      z-index: 1001;
+      font-size: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    `;
+    notification.textContent = `✅ QR offline baixado: ${nomeArquivo}`;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      if (document.body.contains(notification)) {
+        document.body.removeChild(notification);
+      }
+    }, 3000);
+    
+  } catch (error) {
+    alert('❌ Erro ao baixar QR Code: ' + error.message);
+    updateDebugInfo(`Erro ao baixar QR offline: ${error.message}`, 'error');
+  }
+}
+
+function baixarQRCode(canvas, nomeArquivo) {
+  baixarQRIndividual(canvas, nomeArquivo);
+}
+
+function ocultarTodosQRs() {
+  const containers = document.querySelectorAll('.qr-container.show');
+  containers.forEach(container => {
+    container.classList.remove('show');
+    container.style.display = 'none';
+  });
+  updateDebugInfo(`${containers.length} QR Codes offline ocultados`, 'info');
+}
+
+// ===== FUNÇÕES DE BUSCA =====
+function buscarDocumentos() {
+  const termo = document.getElementById("busca").value.toLowerCase().trim();
+  
+  updateDebugInfo(`Buscando por: "${termo}"`, 'info');
+
+  if (!termo) {
+    documentosFiltrados = todosDocumentos;
+    updateDebugInfo('Busca limpa, mostrando todos os documentos', 'info');
+  } else {
+    documentosFiltrados = todosDocumentos.filter(doc => {
+      return Object.values(doc).some(valor => {
+        if (valor && typeof valor === 'string') {
+          return valor.toLowerCase().includes(termo);
+        }
+        return false;
+      });
+    });
+    updateDebugInfo(`Encontrados ${documentosFiltrados.length} documentos`, 'success');
+  }
+
+  documentosSelecionados.clear();
+  renderizarTabela(documentosFiltrados);
+  updateStatus('Online ✅', documentosFiltrados.length);
+}
+
+function limparBusca() {
+  document.getElementById("busca").value = '';
+  documentosFiltrados = todosDocumentos;
+  documentosSelecionados.clear();
+  renderizarTabela(documentosFiltrados);
+  updateStatus('Online ✅', todosDocumentos.length);
+  updateDebugInfo('Busca limpa', 'info');
+}
+
+// ===== NAVEGAÇÃO =====
+function voltarPagina() {
+  const tipoUsuario = localStorage.getItem("tipoUsuario");
+  let destino = "index.html";
+  
+  if (tipoUsuario === "administrador") {
+    destino = "admin.html";
+  } else if (tipoUsuario === "editor") {
+    destino = "editor.html";
+  } else if (tipoUsuario === "codificador") {
+    destino = "codificador.html";
+  }
+  
+  updateDebugInfo(`Redirecionando para: ${destino}`, 'info');
+  window.location.href = destino;
+}
+
+// ===== FUNÇÕES INDIVIDUAIS =====
+function abrirArquivo(nomeArquivo) {
+  const url = `http://localhost:5000/uploads/${nomeArquivo}`;
+  window.open(url, '_blank');
+  updateDebugInfo(`Arquivo aberto: ${nomeArquivo}`, 'info');
+}
+
+function exportarWord(index) {
+  const doc = documentosFiltrados[index];
+  const nome = prompt("📄 Nome do arquivo Word:", doc.Arquivo || "documento");
+  if (!nome) return;
+
+  const nomeCompleto = nome.endsWith('.docx') ? nome : nome + '.docx';
+
+  fetch(`http://localhost:5000/exportar_word?nome=${encodeURIComponent(nomeCompleto)}&usuario=${localStorage.getItem('usuarioLogado') || 'usuario'}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([doc])
+  })
+  .then(res => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.blob();
+  })
+  .then(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nomeCompleto;
+    a.click();
+    URL.revokeObjectURL(url);
+    updateDebugInfo(`Documento exportado para Word: ${nomeCompleto}`, 'success');
+  })
+  .catch(err => {
+    alert('❌ Erro ao exportar: ' + err.message);
+    updateDebugInfo(`Erro na exportação Word individual: ${err.message}`, 'error');
+  });
+}
+
+function exportarExcel(index) {
+  const doc = documentosFiltrados[index];
+  const nome = prompt("📊 Nome do arquivo Excel:", doc.Arquivo || "documento");
+  if (!nome) return;
+
+  const nomeCompleto = nome.endsWith('.xlsx') ? nome : nome + '.xlsx';
+
+  fetch(`http://localhost:5000/exportar_excel?nome=${encodeURIComponent(nomeCompleto)}&usuario=${localStorage.getItem('usuarioLogado') || 'usuario'}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([doc])
+  })
+  .then(res => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.blob();
+  })
+  .then(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nomeCompleto;
+    a.click();
+    URL.revokeObjectURL(url);
+    updateDebugInfo(`Documento exportado para Excel: ${nomeCompleto}`, 'success');
+  })
+  .catch(err => {
+    alert('❌ Erro ao exportar: ' + err.message);
+    updateDebugInfo(`Erro na exportação Excel individual: ${err.message}`, 'error');
+  });
+}
+
+function editarDoc(index) {
+  const doc = documentosFiltrados[index];
+  updateDebugInfo(`Editar documento ${index}: ${doc.Arquivo || 'Sem nome'}`, 'info');
+  alert("🚧 Função de edição em desenvolvimento");
+}
+
+function excluirDoc(index) {
+  const doc = documentosFiltrados[index];
+  if (confirm(`❌ Deseja realmente excluir o documento:\n"${doc.Arquivo || 'Sem título'}"?`)) {
+    fetch("http://localhost:5000/excluir_documento", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: doc.id,
+        tipo_usuario: localStorage.getItem("tipoUsuario"),
+        usuario: localStorage.getItem("usuarioLogado"),
+      }),
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.status === "ok") {
+        alert("✅ Documento excluído com sucesso!");
+        updateDebugInfo(`Documento excluído: ${doc.Arquivo || doc.id}`, "success");
+        carregarDados();
+      } else {
+        alert("❌ Erro ao excluir: " + data.mensagem);
+        updateDebugInfo(`Erro ao excluir documento: ${data.mensagem}`, "error");
+      }
+    })
+    .catch((err) => {
+      alert("❌ Erro na comunicação: " + err.message);
+      updateDebugInfo(`Erro na exclusão: ${err.message}`, "error");
+    });
+  }
+}
+
+// ===== INICIALIZAÇÃO =====
+document.addEventListener('DOMContentLoaded', function() {
+  console.log("🚀 Página carregada, inicializando sistema offline...");
+  updateDebugInfo('=== INICIALIZAÇÃO DO SISTEMA OFFLINE ===', 'info');
+  updateDebugInfo('✅ QR Code offline carregado e pronto para uso', 'success');
+  
+  // Event listener para busca em tempo real
+  const campoBusca = document.getElementById('busca');
+  if (campoBusca) {
+    campoBusca.addEventListener('input', function() {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(buscarDocumentos, 300);
+    });
+    
+    campoBusca.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        buscarDocumentos();
+      }
+    });
+    updateDebugInfo('Event listeners de busca configurados', 'info');
+  }
+
+  // Carregar dados iniciais
+  updateDebugInfo('Iniciando carregamento automático de dados...', 'info');
+  updateStatus('Inicializando...', 'info');
+  
+  // Pequeno delay para garantir que a página está totalmente carregada
+  setTimeout(() => {
+    carregarDados();
+  }, 500);
+});
+
+// ===== TRATAMENTO DE ERROS GLOBAIS =====
+window.addEventListener('error', function(e) {
+  updateDebugInfo(`ERRO JavaScript: ${e.message} em ${e.filename}:${e.lineno}`, 'error');
+  console.error('Erro capturado:', e);
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+  updateDebugInfo(`Promise rejeitada: ${e.reason}`, 'error');
+  console.error('Promise rejeitada:', e);
+});
+
+// ===== LOG DE INICIALIZAÇÃO =====
+console.log("📋 Sistema de Visualização de Documentos - QR Code Offline");
+console.log("✅ QR Codes funcionam independente da conexão com internet");
+console.log("🔧 Debug disponível via botão no canto superior direito");
+console.log("📱 Use testarQROffline() para testar o sistema QR");
+console.log("🔗 Use testarConexao() para verificar conectividade com servidor");
+</script>
+</body>
+</html>

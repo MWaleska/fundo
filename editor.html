@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Editor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Botão de tema -->
+  <button id="theme-toggle" class="theme-toggle">🌙</button>
+  
+  <div class="main-container">
+    <img src="fcja.png" class="logo" alt="Logo" />
+    <h2>Bem-vindo, Editor</h2>
+    <button onclick="logout()">Sair</button>
+    
+    <!-- Botões de navegação -->
+    <div class="nav-buttons">
+      <button onclick="window.location='visualizar.html'">Buscar Documentos</button>
+      <button onclick="window.location='uploads.html'">Gerenciar Uploads</button>
+      <button onclick="window.location='exportacoes.html'">Histórico Exportações</button>
+    </div>
+    
+    <h3>Inserir Dados Arquivologia</h3>
+    <form id="formDados">
+      <input type="text" placeholder="Arquivo" name="Arquivo" required />
+      <select name="TipoArquivo" id="tipoArquivo">
+        <option value="" disabled selected hidden>Tipo do Arquivo (opcional)</option>
+        <option value="Pessoal">Pessoal</option>
+        <option value="SPG">SPG</option>
+        <option value="Familiares">Familiares</option>
+      </select>
+      <input type="text" placeholder="Fundo/Coleção" name="Fundo" required />
+      <input type="text" placeholder="Grupo" name="Grupo" required />
+      <input type="text" placeholder="Subgrupo" name="Subgrupo" required />
+      <input type="text" placeholder="Série/Espécie" name="Serie" required />
+      <input type="text" placeholder="Tipo Documental" name="Tipo" required />
+      <input type="text" placeholder="Dossiê" name="Dossie" required />
+      <input type="number" name="Qtd" placeholder="Quantidade de Documentos" min="1" max="10000"/>
+      <input type="text" placeholder="Datas-limite" name="Datas" required />
+      <input type="hidden" id="arquivo_nome_salvo" />
+      <button type="submit">Salvar Dados</button>
+    </form>
+    
+    <hr style="margin: 30px 0;" />
+    
+    <h3>Upload de Arquivos (Imagem, Vídeo, Áudio)</h3>
+    <form id="formUpload" enctype="multipart/form-data">
+      <input type="file" id="arquivoUpload" name="arquivo" />
+      <button type="submit">Enviar arquivo</button>
+    </form>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>
+    // Configurar tipo de usuário
+    localStorage.setItem('tipoUsuario', 'editor');
+    
+    // Upload de arquivos
+    document.getElementById('formUpload').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const arquivoInput = document.getElementById("arquivoUpload");
+      if (arquivoInput.files.length === 0) {
+        alert("Selecione um arquivo para enviar.");
+        return;
+      }
+      const formData = new FormData();
+      formData.append("arquivo", arquivoInput.files[0]);
+      formData.append("usuario", localStorage.getItem('usuarioLogado') || 'editor');
+      fetch('http://localhost:5000/upload_arquivo', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === 'ok') {
+          alert('Arquivo enviado com sucesso!');
+          document.getElementById("arquivo_nome_salvo").value = data.nome_arquivo;
+          this.reset();
+        } else {
+          alert('Erro: ' + (data.mensagem || 'Falha no upload'));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Erro na requisição');
+      });
+    });
+  </script>
+</body>
+</html>

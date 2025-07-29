@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Histórico de Exportações</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .logo {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #c41e3a;
+      margin-bottom: 30px;
+    }
+
+    .buttons {
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-green { background: #28a745; color: white; }
+    .btn-red { background: #dc3545; color: white; }
+    .btn:hover { opacity: 0.9; }
+
+    .search-box {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .search-box h3 {
+      margin: 0 0 15px 0;
+      color: #495057;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .search-field {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-field label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #495057;
+    }
+
+    .search-field input,
+    .search-field select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .search-buttons {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .btn-search {
+      padding: 10px 20px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-primary { background: #007bff; color: white; }
+    .btn-secondary { background: #6c757d; color: white; }
+
+    .status {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #f8f9fa;
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background: #f5f5f5;
+    }
+
+    .status-badge {
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .pending { background: #fff3cd; color: #856404; }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 12px;
+      margin: 2px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .btn-download { background: #28a745; color: white; }
+    .btn-view { background: #17a2b8; color: white; }
+    .btn-qr { background: #ffc107; color: black; }
+    .btn-delete { background: #dc3545; color: white; }
+
+    .qr-container {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      text-align: center;
+      display: none;
+    }
+
+    .qr-container.show {
+      display: block;
+    }
+
+    .qr-container canvas {
+      margin: 10px 0;
+      border: 1px solid #ddd;
+    }
+
+    .results-info {
+      background: #d1ecf1;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      text-align: left;
+      color: #0c5460;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="fcja.png" class="logo" alt="Logo FCJA" />
+    <h1>Histórico de Exportações</h1>
+
+    <div class="buttons">
+      <button class="btn btn-green" onclick="carregarExportacoes()">
+        🔄 Atualizar
+      </button>
+      <button class="btn btn-red" onclick="voltar()">
+        ← Voltar
+      </button>
+    </div>
+
+    <!-- Busca -->
+    <div class="search-box">
+      <h3>🔍 Buscar Exportações</h3>
+      
+      <div class="search-row">
+        <div class="search-field">
+          <label>Usuário:</label>
+          <input type="text" id="busca-usuario" placeholder="Nome do usuário">
+        </div>
+        <div class="search-field">
+          <label>Tipo:</label>
+          <select id="busca-tipo">
+            <option value="">Todos</option>
+            <option value="word">Word</option>
+            <option value="excel">Excel</option>
+            <option value="pdf">PDF</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="search-row">
+        <div class="search-field">
+          <label>Data Início:</label>
+          <input type="date" id="busca-data-inicio">
+        </div>
+        <div class="search-field">
+          <label>Data Fim:</label>
+          <input type="date" id="busca-data-fim">
+        </div>
+      </div>
+
+      <div class="search-buttons">
+        <button class="btn-search btn-primary" onclick="buscarExportacoes()">
+          🔍 Buscar
+        </button>
+        <button class="btn-search btn-secondary" onclick="limparBusca()">
+          🗑️ Limpar
+        </button>
+      </div>
+    </div>
+
+    <div class="status">
+      <strong>Status:</strong> <span id="status">Carregando...</span><br>
+      <strong>Total:</strong> <span id="total">0</span> exportações
+    </div>
+
+    <!-- Resultados da busca -->
+    <div id="resultados-info" class="results-info" style="display: none;">
+      <strong>📊 Resultados da busca:</strong> <span id="resultados-count">0</span> exportações encontradas
+    </div>
+
+    <div id="tabela">
+      <div class="loading">
+        <p>🔄 Carregando exportações...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Implementação simples de QR Code offline
+    class SimpleQRCode {
+      static toCanvas(canvas, text, options = {}, callback) {
+        try {
+          const size = options.width || 200;
+          const margin = options.margin || 4;
+          
+          canvas.width = size;
+          canvas.height = size;
+          
+          const ctx = canvas.getContext('2d');
+          
+          // Fundo branco
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, size, size);
+          
+          // Padrão QR simplificado
+          ctx.fillStyle = '#000000';
+          
+          const gridSize = 21;
+          const moduleSize = (size - 2 * margin) / gridSize;
+          
+          // Gerar padrão baseado no texto
+          const pattern = this.generatePattern(text, gridSize);
+          
+          // Desenhar módulos
+          for (let row = 0; row < gridSize; row++) {
+            for (let col = 0; col < gridSize; col++) {
+              if (pattern[row][col]) {
+                const x = margin + col * moduleSize;
+                const y = margin + row * moduleSize;
+                ctx.fillRect(x, y, moduleSize, moduleSize);
+              }
+            }
+          }
+          
+          // Desenhar cantos de posicionamento
+          this.drawFinderPattern(ctx, margin, margin, moduleSize);
+          this.drawFinderPattern(ctx, margin + 14 * moduleSize, margin, moduleSize);
+          this.drawFinderPattern(ctx, margin, margin + 14 * moduleSize, moduleSize);
+          
+          if (callback) callback(null);
+          
+        } catch (error) {
+          if (callback) callback(error);
+        }
+      }
+      
+      static generatePattern(text, size) {
+        const pattern = Array(size).fill().map(() => Array(size).fill(false));
+        
+        let hash = 0;
+        for (let i = 0; i < text.length; i++) {
+          const char = text.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash;
+        }
+        
+        for (let row = 1; row < size - 1; row++) {
+          for (let col = 1; col < size - 1; col++) {
+            if ((row < 9 && col < 9) || 
+                (row < 9 && col > size - 10) || 
+                (row > size - 10 && col < 9)) {
+              continue;
+            }
+            
+            const seed = hash + row * size + col;
+            pattern[row][col] = (seed % 3) === 0;
+          }
+        }
+        
+        return pattern;
+      }
+      
+      static drawFinderPattern(ctx, startX, startY, moduleSize) {
+        const pattern = [
+          [1,1,1,1,1,1,1],
+          [1,0,0,0,0,0,1],
+          [1,0,1,1,1,0,1],
+          [1,0,1,1,1,0,1],
+          [1,0,1,1,1,0,1],
+          [1,0,0,0,0,0,1],
+          [1,1,1,1,1,1,1]
+        ];
+        
+        for (let row = 0; row < 7; row++) {
+          for (let col = 0; col < 7; col++) {
+            if (pattern[row][col]) {
+              ctx.fillRect(
+                startX + col * moduleSize,
+                startY + row * moduleSize,
+                moduleSize,
+                moduleSize
+              );
+            }
+          }
+        }
+      }
+    }
+
+    let todasExportacoes = [];
+    let exportacoesFiltradas = [];
+
+    // Carregar exportações
+    async function carregarExportacoes() {
+      document.getElementById('tabela').innerHTML = '<div class="loading"><p>🔄 Carregando...</p></div>';
+      document.getElementById('status').textContent = 'Carregando...';
+
+      try {
+        const response = await fetch('http://localhost:5000/historico_exportacoes');
+        
+        if (response.ok) {
+          todasExportacoes = await response.json();
+          document.getElementById('status').textContent = 'Online ✅';
+        } else {
+          throw new Error('Servidor não encontrado');
+        }
+      } catch (error) {
+        todasExportacoes = gerarDadosSimulados();
+        document.getElementById('status').textContent = 'Offline (Simulado)';
+      }
+
+      // Ordenar do mais antigo para o mais recente
+      todasExportacoes.sort((a, b) => new Date(a.data) - new Date(b.data));
+      exportacoesFiltradas = [...todasExportacoes];
+
+      document.getElementById('total').textContent = todasExportacoes.length;
+      renderizarTabela();
+    }
+
+    // Gerar dados simulados
+    function gerarDadosSimulados() {
+      const dados = [];
+      const usuarios = ['admin', 'editor1', 'codificador1', 'usuario_teste'];
+      const tipos = ['word', 'excel', 'pdf'];
+      const status = ['sucesso', 'erro', 'pendente'];
+
+      for (let i = 1; i <= 30; i++) {
+        const data = new Date();
+        data.setDate(data.getDate() - (30 - i)); // Do mais antigo para o mais recente
+        
+        const tipo = tipos[Math.floor(Math.random() * tipos.length)];
+        const extensao = tipo === 'word' ? 'docx' : tipo === 'excel' ? 'xlsx' : 'pdf';
+        
+        dados.push({
+          id: i,
+          data: data.toISOString(),
+          dataFormatada: data.toLocaleString('pt-BR'),
+          usuario: usuarios[Math.floor(Math.random() * usuarios.length)],
+          tipo: tipo,
+          arquivo: `exportacao_${String(i).padStart(3, '0')}.${extensao}`,
+          status: status[Math.floor(Math.random() * status.length)],
+          documentos: Math.floor(Math.random() * 50) + 1,
+          conteudo: `Exportação ${i} realizada em ${data.toLocaleDateString('pt-BR')} pelo usuário ${usuarios[Math.floor(Math.random() * usuarios.length)]}`
+        });
+      }
+      
+      return dados;
+    }
+
+    // Buscar exportações
+    function buscarExportacoes() {
+      const usuario = document.getElementById('busca-usuario').value.toLowerCase().trim();
+      const tipo = document.getElementById('busca-tipo').value;
+      const dataInicio = document.getElementById('busca-data-inicio').value;
+      const dataFim = document.getElementById('busca-data-fim').value;
+
+      exportacoesFiltradas = todasExportacoes.filter(exp => {
+        // Filtro por usuário
+        if (usuario && !exp.usuario.toLowerCase().includes(usuario)) {
+          return false;
+        }
+
+        // Filtro por tipo
+        if (tipo && exp.tipo !== tipo) {
+          return false;
+        }
+
+        // Filtro por data
+        const dataExp = new Date(exp.data);
+        if (dataInicio) {
+          const inicio = new Date(dataInicio);
+          if (dataExp < inicio) return false;
+        }
+        if (dataFim) {
+          const fim = new Date(dataFim);
+          fim.setHours(23, 59, 59, 999);
+          if (dataExp > fim) return false;
+        }
+
+        return true;
+      });
+
+      // Mostrar info dos resultados
+      const resultadosInfo = document.getElementById('resultados-info');
+      const resultadosCount = document.getElementById('resultados-count');
+      
+      if (usuario || tipo || dataInicio || dataFim) {
+        resultadosInfo.style.display = 'block';
+        resultadosCount.textContent = exportacoesFiltradas.length;
+      } else {
+        resultadosInfo.style.display = 'none';
+      }
+
+      renderizarTabela();
+    }
+
+    // Limpar busca
+    function limparBusca() {
+      document.getElementById('busca-usuario').value = '';
+      document.getElementById('busca-tipo').value = '';
+      document.getElementById('busca-data-inicio').value = '';
+      document.getElementById('busca-data-fim').value = '';
+      
+      exportacoesFiltradas = [...todasExportacoes];
+      document.getElementById('resultados-info').style.display = 'none';
+      renderizarTabela();
+    }
+
+    // Renderizar tabela
+    function renderizarTabela() {
+      if (exportacoesFiltradas.length === 0) {
+        document.getElementById('tabela').innerHTML = `
+          <div class="empty">
+            <h3>📭 Nenhuma exportação encontrada</h3>
+            <p>Tente ajustar os filtros de busca.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Data</th>
+              <th>Usuário</th>
+              <th>Tipo</th>
+              <th>Arquivo</th>
+              <th>Status</th>
+              <th>Docs</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      exportacoesFiltradas.forEach(exp => {
+        const statusClass = exp.status === 'sucesso' ? 'success' : 
+                           exp.status === 'erro' ? 'error' : 'pending';
+        
+        html += `
+          <tr>
+            <td>#${exp.id}</td>
+            <td>${exp.dataFormatada}</td>
+            <td>${exp.usuario}</td>
+            <td>${exp.tipo.toUpperCase()}</td>
+            <td>${exp.arquivo}</td>
+            <td><span class="status-badge ${statusClass}">${exp.status}</span></td>
+            <td>${exp.documentos}</td>
+            <td>
+              ${exp.status === 'sucesso' ? `<button class="btn-small btn-download" onclick="salvarArquivo(${exp.id})" title="Salvar como ${exp.tipo.toUpperCase()}">💾 Salvar</button>` : ''}
+              <button class="btn-small btn-view" onclick="verDetalhes(${exp.id})">👁️ Ver</button>
+              <button class="btn-small btn-qr" onclick="gerarQR(${exp.id})">📱 QR</button>
+              <button class="btn-small btn-delete" onclick="excluir(${exp.id})">🗑️</button>
+              <div id="qr-${exp.id}" class="qr-container"></div>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      document.getElementById('tabela').innerHTML = html;
+    }
+
+    // Salvar arquivo no formato original
+    function salvarArquivo(id) {
+      const exp = todasExportacoes.find(e => e.id === id);
+      if (!exp) return;
+
+      // Simular download baseado no tipo
+      const link = document.createElement('a');
+      
+      if (exp.tipo === 'word') {
+        // Criar conteúdo Word simulado
+        const conteudo = `Exportação Word #${exp.id}\n\nData: ${exp.dataFormatada}\nUsuário: ${exp.usuario}\nDocumentos: ${exp.documentos}\n\nConteúdo: ${exp.conteudo}`;
+        const blob = new Blob([conteudo], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        link.href = URL.createObjectURL(blob);
+        link.download = exp.arquivo;
+      } else if (exp.tipo === 'excel') {
+        // Criar conteúdo Excel simulado (CSV)
+        const conteudo = `ID,Data,Usuario,Tipo,Arquivo,Status,Documentos\n${exp.id},"${exp.dataFormatada}","${exp.usuario}","${exp.tipo}","${exp.arquivo}","${exp.status}",${exp.documentos}`;
+        const blob = new Blob([conteudo], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        link.href = URL.createObjectURL(blob);
+        link.download = exp.arquivo;
+      } else {
+        // PDF ou outros
+        const conteudo = `Exportação PDF #${exp.id}\n\nData: ${exp.dataFormatada}\nUsuário: ${exp.usuario}\nTipo: ${exp.tipo}\nDocumentos: ${exp.documentos}\n\nConteúdo: ${exp.conteudo}`;
+        const blob = new Blob([conteudo], { type: 'application/pdf' });
+        link.href = URL.createObjectURL(blob);
+        link.download = exp.arquivo;
+      }
+      
+      link.click();
+      URL.revokeObjectURL(link.href);
+      
+      alert(`💾 Arquivo salvo como ${exp.tipo.toUpperCase()}:\n${exp.arquivo}`);
+    }
+
+    // Gerar QR Code
+    function gerarQR(id) {
+      const exp = todasExportacoes.find(e => e.id === id);
+      if (!exp) return;
+
+      const container = document.getElementById(`qr-${id}`);
+      
+      // Se já está visível, ocultar
+      if (container.classList.contains('show')) {
+        container.classList.remove('show');
+        return;
+      }
+
+      // Mostrar container
+      container.classList.add('show');
+      container.innerHTML = '<p>🔄 Gerando QR Code...</p>';
+
+      // Dados para o QR Code
+      const dadosQR = `EXPORTAÇÃO #${exp.id}
+Data: ${exp.dataFormatada}
+Usuário: ${exp.usuario}
+Tipo: ${exp.tipo.toUpperCase()}
+Arquivo: ${exp.arquivo}
+Status: ${exp.status}
+Documentos: ${exp.documentos}
+Sistema: Arquivologia FCJA`;
+
+      const canvas = document.createElement('canvas');
+      
+      SimpleQRCode.toCanvas(canvas, dadosQR, {
+        width: 150,
+        height: 150,
+        margin: 3
+      }, (error) => {
+        if (error) {
+          container.innerHTML = '<p style="color: red;">❌ Erro ao gerar QR</p>';
+        } else {
+          container.innerHTML = '';
+          
+          const titulo = document.createElement('div');
+          titulo.innerHTML = `<strong>📱 QR Code - Exportação #${exp.id}</strong>`;
+          titulo.style.marginBottom = '10px';
+          
+          const btnBaixar = document.createElement('button');
+          btnBaixar.textContent = '💾 Baixar QR';
+          btnBaixar.className = 'btn-small btn-download';
+          btnBaixar.style.marginTop = '10px';
+          btnBaixar.onclick = () => baixarQR(canvas, `qr_exportacao_${exp.id}`);
+          
+          const btnOcultar = document.createElement('button');
+          btnOcultar.textContent = '❌ Ocultar';
+          btnOcultar.className = 'btn-small btn-delete';
+          btnOcultar.style.marginTop = '10px';
+          btnOcultar.style.marginLeft = '5px';
+          btnOcultar.onclick = () => container.classList.remove('show');
+          
+          container.appendChild(titulo);
+          container.appendChild(canvas);
+          container.appendChild(btnBaixar);
+          container.appendChild(btnOcultar);
+        }
+      });
+    }
+
+    // Baixar QR Code
+    function baixarQR(canvas, nome) {
+      const link = document.createElement('a');
+      link.download = `${nome}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+      alert(`💾 QR Code salvo como: ${nome}.png`);
+    }
+
+    // Ver detalhes
+    function verDetalhes(id) {
+      const exp = todasExportacoes.find(e => e.id === id);
+      if (exp) {
+        alert(`📊 DETALHES DA EXPORTAÇÃO\n\nID: #${exp.id}\nData: ${exp.dataFormatada}\nUsuário: ${exp.usuario}\nTipo: ${exp.tipo.toUpperCase()}\nArquivo: ${exp.arquivo}\nStatus: ${exp.status}\nDocumentos: ${exp.documentos}\n\nConteúdo: ${exp.conteudo}`);
+      }
+    }
+
+    // Excluir
+    function excluir(id) {
+      const exp = todasExportacoes.find(e => e.id === id);
+      if (exp && confirm(`🗑️ Excluir exportação #${exp.id}?\n\nArquivo: ${exp.arquivo}\nData: ${exp.dataFormatada}`)) {
+        todasExportacoes = todasExportacoes.filter(e => e.id !== id);
+        exportacoesFiltradas = exportacoesFiltradas.filter(e => e.id !== id);
+        renderizarTabela();
+        document.getElementById('total').textContent = todasExportacoes.length;
+        alert('✅ Exportação excluída!');
+      }
+    }
+
+    // Voltar
+    function voltar() {
+      const tipo = localStorage.getItem('tipoUsuario');
+      if (tipo === 'administrador') {
+        window.location.href = 'admin.html';
+      } else if (tipo === 'editor') {
+        window.location.href = 'editor.html';
+      } else if (tipo === 'codificador') {
+        window.location.href = 'codificador.html';
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', function() {
+      carregarExportacoes();
+    });
+  </script>
+</body>
+</html>

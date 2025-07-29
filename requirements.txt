@@ -1,0 +1,6 @@
+flask
+flask-cors
+bcrypt
+pandas
+python-docx
+gunicorn

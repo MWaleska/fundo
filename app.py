@@ -13,6 +13,9 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 import mimetypes
 import logging
 from pathlib import Path
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import psycopg2.pool
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

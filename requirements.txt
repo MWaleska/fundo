@@ -1,6 +1,9 @@
-flask
-flask-cors
-bcrypt
-pandas
-python-docx
-gunicorn
+flask==3.1.1
+flask-cors==6.0.1
+bcrypt==4.3.0
+pandas==2.3.1
+python-docx==1.2.0
+gunicorn==23.0.0
+openpyxl==3.1.2
+pathlib2==2.3.7
+
